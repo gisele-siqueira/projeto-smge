@@ -91,7 +91,7 @@ java -jar target/smge-4.2.jar   # tudo em http://localhost:8080
 ```
 
 - Não é preciso ter o Node instalado para gerar o pacote: o `frontend-maven-plugin` baixa o Node na pasta `frontend/node/`.
-- Se o `npm install` falhar com `ENOTEMPTY` ou `EPERM` no Windows, feche o VS Code (ou o que estiver usando a pasta `frontend/node_modules`) e rode de novo.
+- Se o `npm install` falhar com `ENOTEMPTY` ou `EPERM` no Windows, algum programa está usando a pasta `frontend/node_modules`: feche-o e rode de novo. Se o VS Code mostrar erro no `pom.xml`, use o comando **"Java: Reload Projects"**.
 
 - **Autenticação (JWT):**
   1. `POST /api/auth/login` com `{"login": "...", "senha": "..."}`. A resposta traz `accessToken`, `expiraEm` e os dados do usuário (com as permissões).
@@ -131,6 +131,9 @@ Telas de usuários e perfis de acesso.
 - **Perfis de acesso** (`/perfis`, exige `PERFIL_GERENCIAR`): lista, criação, edição e exclusão. O perfil Administrador aparece como "Sistema" e não pode ser alterado.
 - `SeletorPermissoes`: checklist por módulo com "marcar todas". As permissões que o usuário logado não possui ficam bloqueadas, e as que já vêm de um perfil são indicadas.
 - Erros da API (login duplicado, perfil em uso etc.) aparecem no campo ou em uma mensagem.
+
+### Corrigido
+- O VS Code (extensão Java) executava o `npm install` e o `npm run build` em segundo plano a cada arquivo salvo, travando a pasta `frontend/node_modules` e mostrando erro no `pom.xml`. O `pom.xml` agora diz à IDE para ignorar o `frontend-maven-plugin`; o `./mvnw package` continua compilando o front normalmente.
 
 ---
 

@@ -98,6 +98,43 @@
     </dependencies>
 
     <build>
+
+        <pluginManagement>
+            <plugins>
+                <!--
+                    Só para IDEs (VS Code com extensão Java, Eclipse): não rodar o build
+                    do front-end a cada arquivo salvo. Sem isso a IDE executa npm install
+                    e npm run build em segundo plano e trava a pasta node_modules.
+                    O Maven pela linha de comando ignora este bloco.
+                -->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>com.github.eirslett</groupId>
+                                        <artifactId>frontend-maven-plugin</artifactId>
+                                        <versionRange>[0,)</versionRange>
+                                        <goals>
+                                            <goal>install-node-and-npm</goal>
+                                            <goal>npm</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore/>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
         <plugins>
 
             <!-- Spring Boot -->
