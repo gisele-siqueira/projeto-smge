@@ -4,6 +4,7 @@ import com.smge.smge.product.model.ProductModel;
 import com.smge.smge.product.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class ProductController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('PRODUTO_CRIAR')")
     public ResponseEntity<ProductModel> criar(
             @RequestBody ProductModel product) {
 
@@ -31,12 +33,14 @@ public class ProductController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('PRODUTO_VISUALIZAR')")
     public ResponseEntity<List<ProductModel>> listar() {
 
         return ResponseEntity.ok(productService.listar());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('PRODUTO_VISUALIZAR')")
     public ResponseEntity<ProductModel> buscarPorId(
             @PathVariable UUID id) {
 
@@ -44,6 +48,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('PRODUTO_EDITAR')")
     public ResponseEntity<ProductModel> atualizar(
             @PathVariable UUID id,
             @RequestBody ProductModel product) {
@@ -54,6 +59,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('PRODUTO_EXCLUIR')")
     public ResponseEntity<Void> deletar(
             @PathVariable UUID id) {
 

@@ -2,7 +2,7 @@
 
 Sistema de gestão empresarial (ERP). Não há auto-cadastro: as contas são criadas pelo administrador.
 
-**Versão atual: 1.1**
+**Versão atual: 2.0**
 
 ## Regra de versionamento
 
@@ -23,22 +23,47 @@ Toda alteração no projeto deve ganhar uma nova entrada neste arquivo, com a ve
 
 | Módulo | Pacote | Situação |
 |---|---|---|
-| Usuários e autorização | `authorization` | Cadastro pelo admin, login, perfis, troca e expiração de senha |
-| Produtos | `product` | CRUD básico, ainda sem validação e sem DTOs |
+| Usuários e acessos | `authorization` | Cadastro pelo admin, login, perfis e permissões, troca e expiração de senha |
+| Estoque (produtos) | `product` | CRUD básico protegido por permissões, ainda sem validação e sem DTOs |
 | Comum | `common` | Exceções e tratamento global de erros |
 
-### Endpoints de usuários
+### Como funcionam as permissões
 
-| Método | Rota | Quem pode |
+- **Permissão:** uma ação específica, definida no código (enum `Permissao`). Ex.: `PRODUTO_CRIAR`.
+- **Perfil:** um grupo de permissões montado pelo admin (ex.: "Estoquista"). Fica no banco e pode ser editado pela API.
+- **Usuário:** tem um ou mais perfis e, se precisar, permissões extras avulsas. O acesso final é a soma de tudo.
+- O perfil **Administrador** é do sistema: tem todas as permissões, não pode ser editado nem excluído e recebe automaticamente qualquer permissão nova.
+- **Contra escalada de privilégio:** ninguém concede uma permissão que não tem, nem gerencia (desativa, troca senha, altera acessos) um usuário com mais acesso que o seu, nem altera os próprios acessos.
+
+**Para criar uma funcionalidade nova:** adicione a permissão no enum `Permissao` (com módulo e descrição) e proteja o endpoint com `@PreAuthorize("hasAuthority('NOME_DA_PERMISSAO')")`.
+
+| Permissão | Módulo | O que libera |
 |---|---|---|
-| POST | `/users` | ADMIN |
-| GET | `/users`, `/users/{id}` | ADMIN |
-| PATCH | `/users/{id}/desativar`, `/users/{id}/reativar` | ADMIN |
-| PUT | `/users/{id}/senha` | ADMIN |
+| `USUARIO_VISUALIZAR` | Usuários | Consultar usuários |
+| `USUARIO_GERENCIAR` | Usuários | Criar, desativar, redefinir senha e alterar acessos de usuários |
+| `PERFIL_GERENCIAR` | Usuários | Criar, editar e excluir perfis |
+| `PRODUTO_VISUALIZAR` | Estoque | Consultar produtos |
+| `PRODUTO_CRIAR` | Estoque | Cadastrar produtos |
+| `PRODUTO_EDITAR` | Estoque | Editar produtos |
+| `PRODUTO_EXCLUIR` | Estoque | Excluir produtos |
+
+### Endpoints
+
+| Método | Rota | Permissão necessária |
+|---|---|---|
+| POST | `/users` | `USUARIO_GERENCIAR` |
+| GET | `/users`, `/users/{id}` | `USUARIO_VISUALIZAR` |
+| PUT | `/users/{id}/acessos` | `USUARIO_GERENCIAR` |
+| PATCH | `/users/{id}/desativar`, `/users/{id}/reativar` | `USUARIO_GERENCIAR` |
+| PUT | `/users/{id}/senha` | `USUARIO_GERENCIAR` |
 | GET | `/users/me` | Usuário logado |
 | PUT | `/users/me/senha` | Usuário logado |
-
-As rotas `/products` exigem qualquer usuário logado.
+| GET | `/permissoes`, `/perfis`, `/perfis/{id}` | `PERFIL_GERENCIAR` ou `USUARIO_GERENCIAR` |
+| POST / PUT / DELETE | `/perfis`, `/perfis/{id}` | `PERFIL_GERENCIAR` |
+| GET | `/products`, `/products/{id}` | `PRODUTO_VISUALIZAR` |
+| POST | `/products` | `PRODUTO_CRIAR` |
+| PUT | `/products/{id}` | `PRODUTO_EDITAR` |
+| DELETE | `/products/{id}` | `PRODUTO_EXCLUIR` |
 
 ### Como rodar
 
@@ -48,19 +73,48 @@ As rotas `/products` exigem qualquer usuário logado.
 ```
 
 - Autenticação: HTTP Basic.
-- ADMIN inicial: login `admin`, senha `Admin@123`. Em produção, defina `SMGE_ADMIN_LOGIN` e `SMGE_ADMIN_SENHA`.
+- Administrador inicial: login `admin`, senha `Admin@123`. Em produção, defina `SMGE_ADMIN_LOGIN` e `SMGE_ADMIN_SENHA`.
 - Banco H2 em memória (os dados somem ao reiniciar). Console em `http://localhost:8080/h2-console`, JDBC URL `jdbc:h2:mem:smge`, usuário `sa`, sem senha.
 
 ### Pendências e próximos passos
 
-- [ ] Decidir se criar, editar e excluir produtos deve ficar restrito ao ADMIN.
-- [ ] Trocar HTTP Basic por JWT quando houver front-end.
+- [ ] **2.1 — Produtos:** DTOs com validação, `BigDecimal` no preço, renomear `descrição` para `descricao`, `dataCadastro` automática, 409 para código ou nome duplicado.
+- [ ] Campos opcionais e personalizados de produto (configuração por instância).
+- [ ] Movimentação de estoque (entradas e saídas) e alerta de estoque baixo.
 - [ ] Obrigar a troca de senha no primeiro acesso.
-- [ ] Hoje uma senha expirada bloqueia o login, e só o ADMIN consegue liberar. Avaliar permitir que o próprio usuário troque a senha expirada.
-- [ ] `ProductModel`: trocar `float precoUnitario` por `BigDecimal`.
-- [ ] `ProductModel`: renomear o campo `descrição` para `descricao` (sem acento).
-- [ ] `ProductController`: receber DTOs com validação em vez da entidade.
+- [ ] Hoje uma senha expirada bloqueia o login, e só quem tem `USUARIO_GERENCIAR` consegue liberar. Avaliar permitir que o próprio usuário troque a senha expirada.
+- [ ] Trocar HTTP Basic por JWT quando houver front-end.
 - [ ] Trocar o H2 por um banco persistente (ex.: PostgreSQL).
+
+---
+
+## [2.0] — 2026-10-01
+
+Permissões granulares e perfis de acesso, no lugar dos papéis fixos ADMIN/USER.
+
+### ⚠️ Mudanças que quebram compatibilidade
+- O enum `Role` e o campo `role` foram removidos do usuário e da API.
+- `POST /users` agora recebe `perfisIds` e `permissoesExtras` em vez de `role`.
+- `UserResponse` troca `role` por `perfis`, `permissoesExtras` e `permissoes` (soma final).
+- `/products` deixou de aceitar qualquer usuário logado: cada operação exige a sua permissão.
+- Novas tabelas no banco: `perfis`, `perfil_permissoes`, `user_perfis`, `user_permissoes_extras`.
+
+### Adicionado
+- Enums `Permissao` (com módulo e descrição) e `Modulo`.
+- Entidade `PerfilModel` e `PerfilRepository`.
+- `UserModel`: perfis, permissões extras e `permissoesEfetivas()`.
+- Endpoints de perfis (`/perfis`) e o catálogo de permissões por módulo (`/permissoes`).
+- `PUT /users/{id}/acessos` para trocar os perfis e as permissões extras de um usuário.
+- `@PreAuthorize` em todos os endpoints de usuários, perfis e produtos (`@EnableMethodSecurity`).
+- `UsuarioLogado`: regras contra escalada de privilégio.
+- `AcessoNegadoException` (403) no tratamento global de erros.
+- Perfil de sistema **Administrador**, mantido pelo `AdminSeeder` sempre com todas as permissões.
+- Testes: `PerfilControllerTest` (6), cenários de permissão e escalada em `UserControllerTest` (10) e `UserServiceTest` (8), soma de permissões em `UserModelTest` (3). Total: 28 testes.
+
+### Alterado
+- `SecurityConfig` só exige login; a autorização ficou por endpoint.
+- Login carrega as permissões efetivas do usuário como authorities.
+- Desativar, reativar e redefinir a senha do próprio usuário passaram a ser bloqueados (use `/users/me/senha`).
 
 ---
 

@@ -30,6 +30,11 @@ public class GlobalExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    @ExceptionHandler(AcessoNegadoException.class)
+    public ProblemDetail handleAcessoNegado(AcessoNegadoException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleValidacao(MethodArgumentNotValidException ex) {
         Map<String, String> erros = new LinkedHashMap<>();

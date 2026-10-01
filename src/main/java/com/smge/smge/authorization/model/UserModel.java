@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDateTime;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -32,9 +35,20 @@ public class UserModel {
     @Column(nullable = false)
     private LocalDateTime senhaExpiraEm;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_perfis",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "perfil_id")
+    )
+    private Set<PerfilModel> perfis = new HashSet<>();
+
+    // permissões avulsas, além das que vêm dos perfis
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_permissoes_extras", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role role = Role.USER;
+    @Column(name = "permissao", nullable = false)
+    private Set<Permissao> permissoesExtras = new HashSet<>();
 
     @Column(nullable = false)
     private boolean isActive = true;
@@ -62,8 +76,14 @@ public class UserModel {
     }
 
 
-    public boolean isAdmin() {
-        return role == Role.ADMIN;
+    /**
+     * Todas as permissões do usuário: as dos perfis somadas às extras.
+     */
+    public Set<Permissao> permissoesEfetivas() {
+        Set<Permissao> todas = EnumSet.noneOf(Permissao.class);
+        perfis.forEach(perfil -> todas.addAll(perfil.getPermissoes()));
+        todas.addAll(permissoesExtras);
+        return todas;
     }
 
 

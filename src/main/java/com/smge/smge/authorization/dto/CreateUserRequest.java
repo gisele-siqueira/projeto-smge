@@ -1,6 +1,10 @@
 package com.smge.smge.authorization.dto;
 
-import com.smge.smge.authorization.model.Role;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
+import com.smge.smge.authorization.model.Permissao;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -26,7 +30,9 @@ public class CreateUserRequest {
     @Pattern(regexp = PasswordRules.REGEX, message = PasswordRules.MENSAGEM)
     private String senha;
 
-    // opcional: se não informado, o usuário é criado como USER
-    private Role role;
+    // opcionais: um usuário sem perfis nem extras só acessa /users/me
+    private Set<UUID> perfisIds = new HashSet<>();
+
+    private Set<Permissao> permissoesExtras = new HashSet<>();
 
 }
