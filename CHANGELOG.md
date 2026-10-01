@@ -2,7 +2,7 @@
 
 Sistema de gestão empresarial (ERP). Não há auto-cadastro: as contas são criadas pelo administrador.
 
-**Versão atual: 3.0**
+**Versão atual: 4.2**
 
 ## Regra de versionamento
 
@@ -25,7 +25,8 @@ Toda alteração no projeto deve ganhar uma nova entrada neste arquivo, com a ve
 |---|---|---|
 | Usuários e acessos | `authorization` | Login com JWT, cadastro pelo admin, perfis e permissões, troca e expiração de senha |
 | Estoque (produtos) | `product` | CRUD básico protegido por permissões, ainda sem validação e sem DTOs |
-| Comum | `common` | Exceções e tratamento global de erros |
+| Comum | `common` | Exceções, tratamento global de erros, prefixo `/api` e entrega do front-end |
+| Front-end | `frontend/` | React + TypeScript + Vite + Ant Design: login, menu por permissões, minha conta, usuários e perfis |
 
 ### Como funcionam as permissões
 
@@ -49,32 +50,51 @@ Toda alteração no projeto deve ganhar uma nova entrada neste arquivo, com a ve
 
 ### Endpoints
 
+Toda a API fica sob `/api`. O restante dos endereços é o front-end.
+
 | Método | Rota | Permissão necessária |
 |---|---|---|
-| POST | `/auth/login` | Público |
-| POST | `/users` | `USUARIO_GERENCIAR` |
-| GET | `/users`, `/users/{id}` | `USUARIO_VISUALIZAR` |
-| PUT | `/users/{id}/acessos` | `USUARIO_GERENCIAR` |
-| PATCH | `/users/{id}/desativar`, `/users/{id}/reativar` | `USUARIO_GERENCIAR` |
-| PUT | `/users/{id}/senha` | `USUARIO_GERENCIAR` |
-| GET | `/users/me` | Usuário logado |
-| PUT | `/users/me/senha` | Usuário logado |
-| GET | `/permissoes`, `/perfis`, `/perfis/{id}` | `PERFIL_GERENCIAR` ou `USUARIO_GERENCIAR` |
-| POST / PUT / DELETE | `/perfis`, `/perfis/{id}` | `PERFIL_GERENCIAR` |
-| GET | `/products`, `/products/{id}` | `PRODUTO_VISUALIZAR` |
-| POST | `/products` | `PRODUTO_CRIAR` |
-| PUT | `/products/{id}` | `PRODUTO_EDITAR` |
-| DELETE | `/products/{id}` | `PRODUTO_EXCLUIR` |
+| POST | `/api/auth/login` | Público |
+| POST | `/api/users` | `USUARIO_GERENCIAR` |
+| GET | `/api/users`, `/api/users/{id}` | `USUARIO_VISUALIZAR` |
+| PUT | `/api/users/{id}/acessos` | `USUARIO_GERENCIAR` |
+| PATCH | `/api/users/{id}/desativar`, `/api/users/{id}/reativar` | `USUARIO_GERENCIAR` |
+| PUT | `/api/users/{id}/senha` | `USUARIO_GERENCIAR` |
+| GET | `/api/users/me` | Usuário logado |
+| PUT | `/api/users/me/senha` | Usuário logado |
+| GET | `/api/permissoes`, `/api/perfis`, `/api/perfis/{id}` | `PERFIL_GERENCIAR` ou `USUARIO_GERENCIAR` |
+| POST / PUT / DELETE | `/api/perfis`, `/api/perfis/{id}` | `PERFIL_GERENCIAR` |
+| GET | `/api/products`, `/api/products/{id}` | `PRODUTO_VISUALIZAR` |
+| POST | `/api/products` | `PRODUTO_CRIAR` |
+| PUT | `/api/products/{id}` | `PRODUTO_EDITAR` |
+| DELETE | `/api/products/{id}` | `PRODUTO_EXCLUIR` |
 
 ### Como rodar
 
+**Desenvolvimento** (dois terminais):
+
 ```bash
-./mvnw spring-boot:run   # sobe a aplicação em http://localhost:8080
-./mvnw test              # roda os testes
+./mvnw spring-boot:run          # terminal 1: API em http://localhost:8080
+cd frontend && npm install      # terminal 2 (só na primeira vez)
+npm run dev                     # terminal 2: telas em http://localhost:5173
 ```
 
+Abra **http://localhost:5173**. O Vite recarrega a tela a cada alteração e repassa as chamadas `/api` para o Spring (proxy em `vite.config.ts`).
+
+**Testes:** `./mvnw test` (back-end) e `cd frontend && npm run lint` (front-end).
+
+**Pacote para a empresa** (um único jar com as telas e a API):
+
+```bash
+./mvnw package                  # baixa o Node sozinho e compila o front para dentro do jar
+java -jar target/smge-4.2.jar   # tudo em http://localhost:8080
+```
+
+- Não é preciso ter o Node instalado para gerar o pacote: o `frontend-maven-plugin` baixa o Node na pasta `frontend/node/`.
+- Se o `npm install` falhar com `ENOTEMPTY` ou `EPERM` no Windows, feche o VS Code (ou o que estiver usando a pasta `frontend/node_modules`) e rode de novo.
+
 - **Autenticação (JWT):**
-  1. `POST /auth/login` com `{"login": "...", "senha": "..."}`. A resposta traz `accessToken`, `expiraEm` e os dados do usuário (com as permissões).
+  1. `POST /api/auth/login` com `{"login": "...", "senha": "..."}`. A resposta traz `accessToken`, `expiraEm` e os dados do usuário (com as permissões).
   2. Nas demais requisições, envie o header `Authorization: Bearer {accessToken}`.
   - O token vale 8 horas (`SMGE_JWT_VALIDADE_HORAS`).
   - Desativar o usuário ou alterar os acessos dele vale na hora, mesmo com o token já emitido.
@@ -86,14 +106,65 @@ Toda alteração no projeto deve ganhar uma nova entrada neste arquivo, com a ve
 
 ### Pendências e próximos passos
 
-- [ ] **2.1 — Produtos:** DTOs com validação, `BigDecimal` no preço, renomear `descrição` para `descricao`, `dataCadastro` automática, 409 para código ou nome duplicado.
+- [ ] **Produtos (back-end):** DTOs com validação, `BigDecimal` no preço, renomear `descrição` para `descricao`, `dataCadastro` automática, 409 para código ou nome duplicado.
 - [ ] Campos opcionais e personalizados de produto (configuração por instância).
 - [ ] Movimentação de estoque (entradas e saídas) e alerta de estoque baixo.
 - [ ] Obrigar a troca de senha no primeiro acesso.
 - [ ] Hoje uma senha expirada bloqueia o login, e só quem tem `USUARIO_GERENCIAR` consegue liberar. Avaliar permitir que o próprio usuário troque a senha expirada.
 - [ ] Trocar o H2 por um banco persistente (ex.: PostgreSQL).
 - [ ] Limitar tentativas de login (proteção contra força bruta).
-- [ ] Front-end: login, menu por permissões, minha conta, usuários e perfis.
+- [ ] Telas de produtos (depois do back-end de produtos).
+- [ ] Testes automatizados do front-end (ex.: Vitest + Testing Library).
+
+---
+
+## [4.2] — 2026-10-01
+
+Telas de usuários e perfis de acesso.
+
+### Adicionado
+- **Usuários** (`/usuarios`, exige `USUARIO_VISUALIZAR`):
+  - Lista com busca por nome ou login, filtro de situação, perfis, permissões extras e a data de expiração da senha (em vermelho se já expirou).
+  - Cadastro com senha provisória, perfis e permissões extras.
+  - Ações para quem tem `USUARIO_GERENCIAR`: alterar acessos, redefinir senha, desativar e reativar.
+  - As ações somem para o próprio usuário e para quem tem mais acessos que você, seguindo a mesma regra do back-end.
+- **Perfis de acesso** (`/perfis`, exige `PERFIL_GERENCIAR`): lista, criação, edição e exclusão. O perfil Administrador aparece como "Sistema" e não pode ser alterado.
+- `SeletorPermissoes`: checklist por módulo com "marcar todas". As permissões que o usuário logado não possui ficam bloqueadas, e as que já vêm de um perfil são indicadas.
+- Erros da API (login duplicado, perfil em uso etc.) aparecem no campo ou em uma mensagem.
+
+---
+
+## [4.1] — 2026-10-01
+
+Estrutura do front-end, login e minha conta.
+
+### Adicionado
+- Projeto `frontend/` com React 19, TypeScript, Vite 8, Ant Design 6 (em português) e React Router 7.
+- `api/`: cliente HTTP que envia o token e converte os erros do back-end em mensagens, mais uma função por endpoint.
+- `auth/`: sessão do usuário (token no `localStorage`). Ao abrir o sistema o token é conferido, e qualquer 401 da API leva de volta ao login com aviso.
+- **Login:** mensagens para senha errada, usuário desativado e senha expirada.
+- **Layout:** menu lateral que mostra só as telas que o usuário pode acessar (`layout/menu.tsx`) e menu do usuário com Minha conta e Sair.
+- **Início:** atalhos para as telas liberadas e aviso quando a senha expira em até 7 dias.
+- **Minha conta:** dados do usuário e troca de senha. Depois da troca, o sistema pede login de novo.
+- Rotas protegidas por permissão, com tela de "Sem permissão" e de "Página não encontrada".
+
+---
+
+## [4.0] — 2026-10-01
+
+API sob `/api` e front-end servido pelo próprio Spring Boot (um único container por empresa).
+
+### ⚠️ Mudanças que quebram compatibilidade
+- Todas as rotas da API ganharam o prefixo `/api` (ex.: `/users` virou `/api/users`, `/auth/login` virou `/api/auth/login`).
+
+### Adicionado
+- `WebConfig`: aplica o prefixo `/api` a todos os `@RestController` e serve o front-end de `classpath:/static`. Rotas do React (ex.: `/usuarios`) devolvem o `index.html`, então o F5 funciona em qualquer tela. Rotas inexistentes da API continuam dando 404.
+- `frontend-maven-plugin` no `pom.xml`: o `./mvnw package` baixa o Node, instala as dependências e compila o front para dentro do jar. `test` e `spring-boot:run` não executam essa etapa.
+- Proxy do Vite para `/api` em desenvolvimento.
+- `WebConfigTest` (5). Total: 41 testes.
+
+### Alterado
+- `SecurityConfig`: `/api/**` exige token (exceto `POST /api/auth/login`); o resto (telas, JS, CSS) é público.
 
 ---
 

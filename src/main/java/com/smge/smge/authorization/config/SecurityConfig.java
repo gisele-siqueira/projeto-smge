@@ -25,8 +25,8 @@ import com.smge.smge.authorization.security.SmgeUserDetailsService;
 
 /**
  * Autenticação por token JWT:
- * 1. POST /auth/login (público) confere login e senha e devolve o token.
- * 2. As demais rotas exigem o header "Authorization: Bearer {token}".
+ * 1. POST /api/auth/login (público) confere login e senha e devolve o token.
+ * 2. As demais rotas /api/** exigem o header "Authorization: Bearer {token}".
  * O que cada usuário pode fazer é definido por permissão em cada endpoint,
  * com @PreAuthorize("hasAuthority('...')").
  */
@@ -64,9 +64,11 @@ public class SecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers("/api/**").authenticated()
+                        // fora de /api é o front-end (HTML, JS, CSS) e o console do H2:
+                        // as telas são públicas, os dados vêm da API, que exige token
+                        .anyRequest().permitAll())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtUsuarioConverter)));
 

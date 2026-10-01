@@ -31,7 +31,7 @@ class UserControllerTest extends ApiTestBase {
                 {"nome": "%s", "permissoes": [%s]}
                 """.formatted(nome, aspas(permissoes));
 
-        String resposta = mockMvc.perform(post("/perfis")
+        String resposta = mockMvc.perform(post("/api/perfis")
                         .with(como(ADMIN_LOGIN, ADMIN_SENHA))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
@@ -46,7 +46,7 @@ class UserControllerTest extends ApiTestBase {
                 {"nome": "%s", "login": "%s", "senha": "%s", "perfisIds": [%s], "permissoesExtras": [%s]}
                 """.formatted(login, login, SENHA, aspas(perfisIds.toArray(String[]::new)), aspas(extras));
 
-        String resposta = mockMvc.perform(post("/users")
+        String resposta = mockMvc.perform(post("/api/users")
                         .with(como(ADMIN_LOGIN, ADMIN_SENHA))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
@@ -68,7 +68,7 @@ class UserControllerTest extends ApiTestBase {
 
     @Test
     void adminDeveCriarUsuarioSemExporSenha() throws Exception {
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post("/api/users")
                         .with(como(ADMIN_LOGIN, ADMIN_SENHA))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUsuario("Maria", "maria", SENHA)))
@@ -80,7 +80,7 @@ class UserControllerTest extends ApiTestBase {
 
     @Test
     void semAutenticacaoDeveRetornar401() throws Exception {
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUsuario("Maria", "maria", SENHA)))
                 .andExpect(status().isUnauthorized());
@@ -90,13 +90,13 @@ class UserControllerTest extends ApiTestBase {
     void usuarioSemPermissaoNaoPodeCriarUsuariosMasVeOsPropriosDados() throws Exception {
         criarUsuario("comum", List.of());
 
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post("/api/users")
                         .with(como("comum", SENHA))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUsuario("Outro", "outro", SENHA)))
                 .andExpect(status().isForbidden());
 
-        mockMvc.perform(get("/users/me").with(como("comum", SENHA)))
+        mockMvc.perform(get("/api/users/me").with(como("comum", SENHA)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login").value("comum"));
     }
@@ -106,13 +106,13 @@ class UserControllerTest extends ApiTestBase {
         String estoquista = criarPerfil("Estoquista", "PRODUTO_VISUALIZAR", "PRODUTO_CRIAR");
         criarUsuario("carlos", List.of(estoquista));
 
-        mockMvc.perform(get("/products").with(como("carlos", SENHA)))
+        mockMvc.perform(get("/api/products").with(como("carlos", SENHA)))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(delete("/products/" + UUID.randomUUID()).with(como("carlos", SENHA)))
+        mockMvc.perform(delete("/api/products/" + UUID.randomUUID()).with(como("carlos", SENHA)))
                 .andExpect(status().isForbidden());
 
-        mockMvc.perform(get("/users").with(como("carlos", SENHA)))
+        mockMvc.perform(get("/api/users").with(como("carlos", SENHA)))
                 .andExpect(status().isForbidden());
     }
 
@@ -121,10 +121,10 @@ class UserControllerTest extends ApiTestBase {
         // ex.: funcionária do faturamento que só pode consultar produtos
         criarUsuario("ana", List.of(), "PRODUTO_VISUALIZAR");
 
-        mockMvc.perform(get("/products").with(como("ana", SENHA)))
+        mockMvc.perform(get("/api/products").with(como("ana", SENHA)))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(post("/products")
+        mockMvc.perform(post("/api/products")
                         .with(como("ana", SENHA))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
@@ -136,10 +136,10 @@ class UserControllerTest extends ApiTestBase {
         String id = criarUsuario("bruno", List.of());
         String tokenBruno = token("bruno", SENHA);
 
-        mockMvc.perform(get("/products").with(bearer(tokenBruno)))
+        mockMvc.perform(get("/api/products").with(bearer(tokenBruno)))
                 .andExpect(status().isForbidden());
 
-        mockMvc.perform(put("/users/" + id + "/acessos")
+        mockMvc.perform(put("/api/users/" + id + "/acessos")
                         .with(como(ADMIN_LOGIN, ADMIN_SENHA))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -148,7 +148,7 @@ class UserControllerTest extends ApiTestBase {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.permissoes[0]").value("PRODUTO_VISUALIZAR"));
 
-        mockMvc.perform(get("/products").with(bearer(tokenBruno)))
+        mockMvc.perform(get("/api/products").with(bearer(tokenBruno)))
                 .andExpect(status().isOk());
     }
 
@@ -156,7 +156,7 @@ class UserControllerTest extends ApiTestBase {
     void gerenteNaoPodeCriarUsuarioComMaisAcessosQueEle() throws Exception {
         criarUsuario("gerente", List.of(), "USUARIO_GERENCIAR");
 
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post("/api/users")
                         .with(como("gerente", SENHA))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -171,15 +171,15 @@ class UserControllerTest extends ApiTestBase {
         String id = criarUsuario("davi", List.of());
         String tokenDavi = token("davi", SENHA);
 
-        mockMvc.perform(patch("/users/" + id + "/desativar").with(como(ADMIN_LOGIN, ADMIN_SENHA)))
+        mockMvc.perform(patch("/api/users/" + id + "/desativar").with(como(ADMIN_LOGIN, ADMIN_SENHA)))
                 .andExpect(status().isNoContent());
 
         // o token que ele já tinha para de funcionar
-        mockMvc.perform(get("/users/me").with(bearer(tokenDavi)))
+        mockMvc.perform(get("/api/users/me").with(bearer(tokenDavi)))
                 .andExpect(status().isUnauthorized());
 
         // e não consegue um token novo
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"login": "davi", "senha": "Senha123"}
@@ -190,7 +190,7 @@ class UserControllerTest extends ApiTestBase {
 
     @Test
     void deveRetornar409ParaLoginDuplicado() throws Exception {
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post("/api/users")
                         .with(como(ADMIN_LOGIN, ADMIN_SENHA))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUsuario("Admin 2", "ADMIN", SENHA)))
@@ -199,7 +199,7 @@ class UserControllerTest extends ApiTestBase {
 
     @Test
     void deveRetornar400ParaDadosInvalidos() throws Exception {
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post("/api/users")
                         .with(como(ADMIN_LOGIN, ADMIN_SENHA))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUsuario("", "a b", "123")))

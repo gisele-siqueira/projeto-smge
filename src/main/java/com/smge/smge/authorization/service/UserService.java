@@ -117,7 +117,7 @@ public class UserService {
      */
     @Transactional
     public void redefinirSenha(UUID id, String novaSenha) {
-        buscarParaGerenciar(id, "Para trocar a própria senha use /users/me/senha")
+        buscarParaGerenciar(id, "Para trocar a própria senha use /api/users/me/senha")
                 .definirSenha(passwordEncoder.encode(novaSenha));
     }
 

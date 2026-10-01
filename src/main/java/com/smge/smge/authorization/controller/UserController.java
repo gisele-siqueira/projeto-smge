@@ -27,7 +27,7 @@ import jakarta.validation.Valid;
 
 /**
  * Gestão de usuários.
- * Rotas /users/me/** -> qualquer usuário autenticado.
+ * Rotas /api/users/me/** -> qualquer usuário autenticado.
  * Demais rotas -> conforme a permissão de cada endpoint.
  */
 @RestController

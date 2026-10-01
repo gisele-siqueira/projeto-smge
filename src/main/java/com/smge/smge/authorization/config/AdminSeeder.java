@@ -70,7 +70,7 @@ public class AdminSeeder implements CommandLineRunner {
 
         userRepository.save(admin);
 
-        log.warn("Usuário administrador inicial criado com login '{}'. Troque a senha em PUT /users/me/senha.", login);
+        log.warn("Usuário administrador inicial criado com login '{}'. Troque a senha em PUT /api/users/me/senha.", login);
     }
 
     private PerfilModel garantirPerfilAdministrador() {

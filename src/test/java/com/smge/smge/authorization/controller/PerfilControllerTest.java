@@ -27,7 +27,7 @@ class PerfilControllerTest extends ApiTestBase {
     }
 
     private String criarPerfil(String nome, String permissoes) throws Exception {
-        String resposta = mockMvc.perform(post("/perfis")
+        String resposta = mockMvc.perform(post("/api/perfis")
                         .with(como(ADMIN_LOGIN, ADMIN_SENHA))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(perfilJson(nome, permissoes)))
@@ -37,7 +37,7 @@ class PerfilControllerTest extends ApiTestBase {
     }
 
     private String idDoAdministrador() throws Exception {
-        String resposta = mockMvc.perform(get("/perfis").with(como(ADMIN_LOGIN, ADMIN_SENHA)))
+        String resposta = mockMvc.perform(get("/api/perfis").with(como(ADMIN_LOGIN, ADMIN_SENHA)))
                 .andReturn().getResponse().getContentAsString();
         List<String> ids = JsonPath.read(resposta, "$[?(@.nome == 'Administrador')].perfilId");
         return ids.get(0);
@@ -45,7 +45,7 @@ class PerfilControllerTest extends ApiTestBase {
 
     @Test
     void deveListarPermissoesAgrupadasPorModulo() throws Exception {
-        mockMvc.perform(get("/permissoes").with(como(ADMIN_LOGIN, ADMIN_SENHA)))
+        mockMvc.perform(get("/api/permissoes").with(como(ADMIN_LOGIN, ADMIN_SENHA)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[?(@.modulo == 'ESTOQUE')].permissoes[*].codigo")
                         .value(hasItem("PRODUTO_CRIAR")));
@@ -53,7 +53,7 @@ class PerfilControllerTest extends ApiTestBase {
 
     @Test
     void administradorTemTodasAsPermissoesEEhDoSistema() throws Exception {
-        mockMvc.perform(get("/perfis/" + idDoAdministrador()).with(como(ADMIN_LOGIN, ADMIN_SENHA)))
+        mockMvc.perform(get("/api/perfis/" + idDoAdministrador()).with(como(ADMIN_LOGIN, ADMIN_SENHA)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.sistema").value(true))
                 .andExpect(jsonPath("$.permissoes.length()").value(
@@ -64,13 +64,13 @@ class PerfilControllerTest extends ApiTestBase {
     void naoDevePermitirEditarOuExcluirPerfilDoSistema() throws Exception {
         String id = idDoAdministrador();
 
-        mockMvc.perform(put("/perfis/" + id)
+        mockMvc.perform(put("/api/perfis/" + id)
                         .with(como(ADMIN_LOGIN, ADMIN_SENHA))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(perfilJson("Administrador", "\"PRODUTO_VISUALIZAR\"")))
                 .andExpect(status().isBadRequest());
 
-        mockMvc.perform(delete("/perfis/" + id).with(como(ADMIN_LOGIN, ADMIN_SENHA)))
+        mockMvc.perform(delete("/api/perfis/" + id).with(como(ADMIN_LOGIN, ADMIN_SENHA)))
                 .andExpect(status().isBadRequest());
     }
 
@@ -78,14 +78,14 @@ class PerfilControllerTest extends ApiTestBase {
     void deveCriarEditarEExcluirPerfil() throws Exception {
         String id = criarPerfil("Conferente", "\"PRODUTO_VISUALIZAR\"");
 
-        mockMvc.perform(put("/perfis/" + id)
+        mockMvc.perform(put("/api/perfis/" + id)
                         .with(como(ADMIN_LOGIN, ADMIN_SENHA))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(perfilJson("Conferente", "\"PRODUTO_VISUALIZAR\", \"PRODUTO_EDITAR\"")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.permissoes.length()").value(2));
 
-        mockMvc.perform(delete("/perfis/" + id).with(como(ADMIN_LOGIN, ADMIN_SENHA)))
+        mockMvc.perform(delete("/api/perfis/" + id).with(como(ADMIN_LOGIN, ADMIN_SENHA)))
                 .andExpect(status().isNoContent());
     }
 
@@ -93,7 +93,7 @@ class PerfilControllerTest extends ApiTestBase {
     void naoDeveExcluirPerfilEmUso() throws Exception {
         String id = criarPerfil("Vendedor", "\"PRODUTO_VISUALIZAR\"");
 
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post("/api/users")
                         .with(como(ADMIN_LOGIN, ADMIN_SENHA))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -101,7 +101,7 @@ class PerfilControllerTest extends ApiTestBase {
                                 """.formatted(id)))
                 .andExpect(status().isCreated());
 
-        mockMvc.perform(delete("/perfis/" + id).with(como(ADMIN_LOGIN, ADMIN_SENHA)))
+        mockMvc.perform(delete("/api/perfis/" + id).with(como(ADMIN_LOGIN, ADMIN_SENHA)))
                 .andExpect(status().isConflict());
     }
 
@@ -109,13 +109,13 @@ class PerfilControllerTest extends ApiTestBase {
     void deveRecusarNomeDuplicadoEPermissaoInexistente() throws Exception {
         criarPerfil("Estoque", "\"PRODUTO_VISUALIZAR\"");
 
-        mockMvc.perform(post("/perfis")
+        mockMvc.perform(post("/api/perfis")
                         .with(como(ADMIN_LOGIN, ADMIN_SENHA))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(perfilJson("estoque", "\"PRODUTO_VISUALIZAR\"")))
                 .andExpect(status().isConflict());
 
-        mockMvc.perform(post("/perfis")
+        mockMvc.perform(post("/api/perfis")
                         .with(como(ADMIN_LOGIN, ADMIN_SENHA))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(perfilJson("Outro", "\"NAO_EXISTE\"")))

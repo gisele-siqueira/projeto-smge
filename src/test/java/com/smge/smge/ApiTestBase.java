@@ -34,7 +34,7 @@ public abstract class ApiTestBase {
      * Faz login e devolve o token de acesso.
      */
     protected String token(String login, String senha) throws Exception {
-        String resposta = mockMvc.perform(post("/auth/login")
+        String resposta = mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"login": "%s", "senha": "%s"}

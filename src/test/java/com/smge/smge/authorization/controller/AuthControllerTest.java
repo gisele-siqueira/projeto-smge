@@ -31,7 +31,7 @@ class AuthControllerTest extends ApiTestBase {
 
     @Test
     void loginDevolveTokenEDadosDoUsuario() throws Exception {
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginJson("ADMIN", ADMIN_SENHA)))
                 .andExpect(status().isOk())
@@ -45,21 +45,21 @@ class AuthControllerTest extends ApiTestBase {
 
     @Test
     void tokenDaAcessoAsRotasProtegidas() throws Exception {
-        mockMvc.perform(get("/users/me").with(bearer(token(ADMIN_LOGIN, ADMIN_SENHA))))
+        mockMvc.perform(get("/api/users/me").with(bearer(token(ADMIN_LOGIN, ADMIN_SENHA))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.login").value("admin"));
     }
 
     @Test
     void senhaErradaRetorna401ComMensagemGenerica() throws Exception {
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginJson(ADMIN_LOGIN, "errada123")))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.detail").value("Login ou senha inválidos"));
 
         // usuário inexistente recebe a mesma mensagem (não revela quais logins existem)
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginJson("ninguem", "errada123")))
                 .andExpect(status().isUnauthorized())
@@ -71,7 +71,7 @@ class AuthControllerTest extends ApiTestBase {
         UserModel admin = userRepository.findByLogin(ADMIN_LOGIN).orElseThrow();
         admin.setSenhaExpiraEm(LocalDateTime.now().minusDays(1));
 
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginJson(ADMIN_LOGIN, ADMIN_SENHA)))
                 .andExpect(status().isUnauthorized())
@@ -80,10 +80,10 @@ class AuthControllerTest extends ApiTestBase {
 
     @Test
     void semTokenOuComTokenInvalidoRetorna401() throws Exception {
-        mockMvc.perform(get("/users/me"))
+        mockMvc.perform(get("/api/users/me"))
                 .andExpect(status().isUnauthorized());
 
-        mockMvc.perform(get("/users/me").with(bearer("token.falso.123")))
+        mockMvc.perform(get("/api/users/me").with(bearer("token.falso.123")))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -95,13 +95,13 @@ class AuthControllerTest extends ApiTestBase {
         UserModel admin = userRepository.findByLogin(ADMIN_LOGIN).orElseThrow();
         admin.setSenhaAlteradaEm(LocalDateTime.now().plusSeconds(1));
 
-        mockMvc.perform(get("/users/me").with(bearer(tokenAntigo)))
+        mockMvc.perform(get("/api/users/me").with(bearer(tokenAntigo)))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     void trocarAPropriaSenhaPeloEndpoint() throws Exception {
-        mockMvc.perform(put("/users/me/senha")
+        mockMvc.perform(put("/api/users/me/senha")
                         .with(como(ADMIN_LOGIN, ADMIN_SENHA))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -109,7 +109,7 @@ class AuthControllerTest extends ApiTestBase {
                                 """))
                 .andExpect(status().isNoContent());
 
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginJson(ADMIN_LOGIN, "NovaSenha456")))
                 .andExpect(status().isOk());
@@ -117,13 +117,13 @@ class AuthControllerTest extends ApiTestBase {
 
     @Test
     void corsLiberaOFrontEndConfigurado() throws Exception {
-        mockMvc.perform(options("/auth/login")
+        mockMvc.perform(options("/api/auth/login")
                         .header("Origin", "http://localhost:5173")
                         .header("Access-Control-Request-Method", "POST"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:5173"));
 
-        mockMvc.perform(options("/auth/login")
+        mockMvc.perform(options("/api/auth/login")
                         .header("Origin", "http://site-malicioso.com")
                         .header("Access-Control-Request-Method", "POST"))
                 .andExpect(status().isForbidden());
