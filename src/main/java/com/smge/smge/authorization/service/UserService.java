@@ -1,5 +1,6 @@
 package com.smge.smge.authorization.service;
 
+import com.smge.smge.authorization.dto.FindUserRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,15 @@ public class UserService {
         user.setSenha(passwordEncoder.encode(request.getSenha()));
 
         user.setActive(true);
+
+        return userRepository.save(user);
+    }
+
+    public UserModel desativarUsuario(FindUserRequest request) {
+        UserModel user = userRepository.findById(request.id())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        user.desativarUser();
 
         return userRepository.save(user);
     }

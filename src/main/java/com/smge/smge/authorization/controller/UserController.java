@@ -28,4 +28,12 @@ public class UserController {
     ) {
         return userService.criarUsuario(request);
     }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserModel DesativarUsuario(
+            @RequestBody CreateUserRequest request
+    ) {
+        return userService.desativarUsuario(request);
+    }
 }
