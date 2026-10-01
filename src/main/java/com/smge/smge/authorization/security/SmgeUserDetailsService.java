@@ -1,7 +1,9 @@
 package com.smge.smge.authorization.security;
 
+import java.util.List;
 import java.util.Locale;
 
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,8 +16,8 @@ import com.smge.smge.authorization.model.UserModel;
 import com.smge.smge.authorization.repository.UserRepository;
 
 /**
- * Faz o Spring Security autenticar usando os usuários salvos no banco.
- * Cada permissão efetiva do usuário vira uma "authority" (ex.: PRODUTO_CRIAR).
+ * Usado no login (POST /auth/login) para conferir login e senha
+ * contra os usuários salvos no banco.
  */
 @Service
 public class SmgeUserDetailsService implements UserDetailsService {
@@ -24,6 +26,15 @@ public class SmgeUserDetailsService implements UserDetailsService {
 
     public SmgeUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    /**
+     * Cada permissão efetiva do usuário vira uma "authority" (ex.: PRODUTO_CRIAR).
+     */
+    public static List<GrantedAuthority> authoritiesDe(UserModel user) {
+        return user.permissoesEfetivas().stream()
+                .map(permissao -> (GrantedAuthority) new SimpleGrantedAuthority(permissao.name()))
+                .toList();
     }
 
     @Override
@@ -35,9 +46,7 @@ public class SmgeUserDetailsService implements UserDetailsService {
 
         return User.withUsername(user.getLogin())
                 .password(user.getSenha())
-                .authorities(user.permissoesEfetivas().stream()
-                        .map(permissao -> new SimpleGrantedAuthority(permissao.name()))
-                        .toList())
+                .authorities(authoritiesDe(user))
                 // usuário desativado não consegue logar
                 .disabled(!user.isActive())
                 // senha expirada bloqueia o login até alguém com USUARIO_GERENCIAR redefinir

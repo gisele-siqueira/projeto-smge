@@ -35,6 +35,10 @@ public class UserModel {
     @Column(nullable = false)
     private LocalDateTime senhaExpiraEm;
 
+    // tokens emitidos antes desta data deixam de valer (ex.: após trocar a senha)
+    @Column(nullable = false)
+    private LocalDateTime senhaAlteradaEm;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_perfis",
@@ -66,8 +70,10 @@ public class UserModel {
      * Recebe a senha JÁ CRIPTOGRAFADA e renova a validade.
      */
     public void definirSenha(String novaSenha) {
+        LocalDateTime agora = LocalDateTime.now();
         this.senha = novaSenha;
-        this.senhaExpiraEm = LocalDateTime.now().plusDays(DIAS_VALIDADE_SENHA);
+        this.senhaAlteradaEm = agora;
+        this.senhaExpiraEm = agora.plusDays(DIAS_VALIDADE_SENHA);
     }
 
 

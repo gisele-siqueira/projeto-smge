@@ -5,6 +5,10 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -33,6 +37,32 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AcessoNegadoException.class)
     public ProblemDetail handleAcessoNegado(AcessoNegadoException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
+    // ---------- erros de login (POST /auth/login) ----------
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ProblemDetail handleCredenciaisInvalidas(BadCredentialsException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Login ou senha inválidos");
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    public ProblemDetail handleUsuarioDesativado(DisabledException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED,
+                "Usuário desativado. Procure o administrador");
+    }
+
+    @ExceptionHandler(CredentialsExpiredException.class)
+    public ProblemDetail handleSenhaExpirada(CredentialsExpiredException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED,
+                "Senha expirada. Procure o administrador para redefinir");
+        problem.setProperty("codigo", "SENHA_EXPIRADA");
+        return problem;
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ProblemDetail handleFalhaAutenticacao(AuthenticationException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Falha na autenticação");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
