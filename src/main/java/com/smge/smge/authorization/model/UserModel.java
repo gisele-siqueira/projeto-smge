@@ -14,32 +14,46 @@ import java.util.UUID;
 @Table(name = "users")
 public class UserModel {
 
+    public static final int DIAS_VALIDADE_SENHA = 90;
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    UUID userId;
+    private UUID userId;
 
     @Column(nullable = false)
-    String nome;
+    private String nome;
 
     @Column(nullable = false, unique = true)
-    String login;
+    private String login;
 
     @Column(nullable = false)
-    String senha;
+    private String senha;
 
     @Column(nullable = false)
-    LocalDateTime senhaExpiraEm;
+    private LocalDateTime senhaExpiraEm;
 
-    //permission;
-    //roleLevel;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.USER;
 
     @Column(nullable = false)
-    boolean isActive = true;
+    private boolean isActive = true;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime criadoEm;
+
+    @PrePersist
+    void aoCriar() {
+        this.criadoEm = LocalDateTime.now();
+    }
 
 
+    /**
+     * Recebe a senha JÁ CRIPTOGRAFADA e renova a validade.
+     */
     public void definirSenha(String novaSenha) {
         this.senha = novaSenha;
-        this.senhaExpiraEm = LocalDateTime.now().plusDays(90);
+        this.senhaExpiraEm = LocalDateTime.now().plusDays(DIAS_VALIDADE_SENHA);
     }
 
 
@@ -48,10 +62,17 @@ public class UserModel {
     }
 
 
+    public boolean isAdmin() {
+        return role == Role.ADMIN;
+    }
+
+
     public void desativarUser() {
-        // zerar permission
-        // zerar roleLevel
         isActive = false;
-        // mudar senha
+    }
+
+
+    public void ativarUser() {
+        isActive = true;
     }
 }

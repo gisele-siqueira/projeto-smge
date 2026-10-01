@@ -1,5 +1,6 @@
 package com.smge.smge.product.service;
 
+import com.smge.smge.common.exception.RecursoNaoEncontradoException;
 import com.smge.smge.product.model.ProductModel;
 import com.smge.smge.product.repository.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class ProductService {
 
     public ProductModel buscarPorId(UUID id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Produto não encontrado"));
     }
 
     public ProductModel atualizar(UUID id, ProductModel novoProduto) {
