@@ -1,5 +1,6 @@
 package com.smge.smge.authorization.controller;
 
+import com.smge.smge.authorization.dto.FindUserRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,10 +30,10 @@ public class UserController {
         return userService.criarUsuario(request);
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/desativar")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public UserModel DesativarUsuario(
-            @RequestBody CreateUserRequest request
+            @RequestBody FindUserRequest request
     ) {
         return userService.desativarUsuario(request);
     }
