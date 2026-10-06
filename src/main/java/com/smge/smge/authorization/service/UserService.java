@@ -1,12 +1,15 @@
 package com.smge.smge.authorization.service;
 
 import com.smge.smge.authorization.dto.FindUserRequest;
+import com.smge.smge.authorization.dto.UserReturnDTO;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.smge.smge.authorization.dto.CreateUserRequest;
 import com.smge.smge.authorization.model.UserModel;
 import com.smge.smge.authorization.repository.UserRepository;
+
+import java.util.List;
 
 @Service
 public class UserService {
@@ -48,4 +51,15 @@ public class UserService {
 
         return userRepository.save(user);
     }
+
+    public List<UserReturnDTO> listarUsuarios() {
+        List<UserModel> users = userRepository.findAll();
+        return users.stream()
+                .map(user -> new UserReturnDTO(
+                        user.getUserId(),
+                        user.getNome()
+                ))
+                .toList();
+    }
+
 }
