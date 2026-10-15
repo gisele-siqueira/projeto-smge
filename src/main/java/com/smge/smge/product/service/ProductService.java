@@ -1,5 +1,6 @@
 package com.smge.smge.product.service;
 
+import com.smge.smge.common.exception.ConflitoException;
 import com.smge.smge.common.exception.RecursoNaoEncontradoException;
 import com.smge.smge.product.model.ProductModel;
 import com.smge.smge.product.repository.ProductRepository;
@@ -18,6 +19,12 @@ public class ProductService {
     }
 
     public ProductModel criar(ProductModel product) {
+        if (productRepository.existsByCodigoIgnoreCase(product.getCodigo())) {
+            throw new ConflitoException("Já existe um produto com esse código");
+        }
+        if (productRepository.existsByNomeIgnoreCase(product.getNome())) {
+            throw new ConflitoException("Já existe um produto com esse nome");
+        }
         return productRepository.save(product);
     }
 
@@ -32,6 +39,13 @@ public class ProductService {
 
     public ProductModel atualizar(UUID id, ProductModel novoProduto) {
         ProductModel produto = buscarPorId(id);
+
+        if (productRepository.existsByCodigoIgnoreCaseAndProductIdNot(novoProduto.getCodigo(), id)) {
+            throw new ConflitoException("Já existe um produto com esse código");
+        }
+        if (productRepository.existsByNomeIgnoreCaseAndProductIdNot(novoProduto.getNome(), id)) {
+            throw new ConflitoException("Já existe um produto com esse nome");
+        }
 
         produto.setCodigo(novoProduto.getCodigo());
         produto.setNome(novoProduto.getNome());

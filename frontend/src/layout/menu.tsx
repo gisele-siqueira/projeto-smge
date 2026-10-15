@@ -1,4 +1,11 @@
-import { HomeOutlined, SafetyOutlined, SettingOutlined, TeamOutlined } from '@ant-design/icons'
+import {
+  HomeOutlined,
+  SafetyOutlined,
+  SettingOutlined,
+  ShopOutlined,
+  TagsOutlined,
+  TeamOutlined,
+} from '@ant-design/icons'
 import type { ReactNode } from 'react'
 
 import type { Permissao } from '../api/tipos'
@@ -13,10 +20,7 @@ export interface ItemMenu {
   filhos?: ItemMenu[]
 }
 
-/**
- * Menu do sistema. Para uma tela nova: adicione aqui, com a mesma permissão
- * usada na rota (App.tsx) e no endpoint do back-end.
- */
+// tela nova: adicione aqui, com a mesma permissão usada na rota (App.tsx) e no endpoint
 export const MENU: ItemMenu[] = [
   { chave: '/', titulo: 'Início', icone: <HomeOutlined /> },
   {
@@ -38,11 +42,21 @@ export const MENU: ItemMenu[] = [
       },
     ],
   },
+  {
+    chave: 'estoque',
+    titulo: 'Estoque',
+    icone: <ShopOutlined />,
+    filhos: [
+      {
+        chave: '/produtos',
+        titulo: 'Produtos',
+        icone: <TagsOutlined />,
+        permissoes: ['PRODUTO_VISUALIZAR'],
+      },
+    ],
+  },
 ]
 
-/**
- * Remove os itens que o usuário não pode ver e os grupos que ficaram vazios.
- */
 export function filtrarMenu(
   itens: ItemMenu[],
   pode: (...permissoes: Permissao[]) => boolean,

@@ -67,3 +67,29 @@ export interface PerfilForm {
   descricao?: string
   permissoes: Permissao[]
 }
+
+export interface Produto {
+  productId: string
+  codigo: string
+  nome: string
+  descrição: string | null
+  categoria: string
+  quantidade: number
+  precoUnitario: number
+  quantidadeMinima: number
+  unidadeMedida: string
+  dataCadastro: string
+  estoqueBaixo: boolean
+}
+
+export interface ProdutoForm {
+  codigo: string
+  nome: string
+  descrição?: string
+  categoria: string
+  quantidade: number
+  precoUnitario: number
+  quantidadeMinima: number
+  unidadeMedida: string
+  dataCadastro: string
+}

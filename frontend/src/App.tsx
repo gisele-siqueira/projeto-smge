@@ -7,12 +7,10 @@ import { InicioPage } from './paginas/InicioPage'
 import { LoginPage } from './paginas/LoginPage'
 import { MinhaContaPage } from './paginas/MinhaContaPage'
 import { PerfisPage } from './paginas/perfis/PerfisPage'
+import { ProdutosPage } from './paginas/produtos/ProdutosPage'
 import { UsuariosPage } from './paginas/usuarios/UsuariosPage'
 
-/**
- * Rotas do sistema. Cada tela exige a mesma permissão do menu (layout/menu.tsx)
- * e do endpoint correspondente no back-end.
- */
+// cada rota exige a mesma permissão do menu (layout/menu.tsx) e do endpoint correspondente
 export function App() {
   return (
     <Routes>
@@ -40,6 +38,14 @@ export function App() {
           element={
             <RotaProtegida permissoes={['PERFIL_GERENCIAR']}>
               <PerfisPage />
+            </RotaProtegida>
+          }
+        />
+        <Route
+          path="produtos"
+          element={
+            <RotaProtegida permissoes={['PRODUTO_VISUALIZAR']}>
+              <ProdutosPage />
             </RotaProtegida>
           }
         />

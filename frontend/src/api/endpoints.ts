@@ -8,6 +8,8 @@ import type {
   NovoUsuario,
   Perfil,
   PerfilForm,
+  Produto,
+  ProdutoForm,
   Usuario,
 } from './tipos'
 
@@ -38,4 +40,12 @@ export const perfisApi = {
     api<Perfil>(`/perfis/${id}`, { method: 'PUT', body: dados }),
   excluir: (id: string) => api<void>(`/perfis/${id}`, { method: 'DELETE' }),
   listarPermissoes: () => api<ModuloPermissoes[]>('/permissoes'),
+}
+
+export const produtosApi = {
+  listar: () => api<Produto[]>('/products'),
+  criar: (dados: ProdutoForm) => api<Produto>('/products', { method: 'POST', body: dados }),
+  atualizar: (id: string, dados: ProdutoForm) =>
+    api<Produto>(`/products/${id}`, { method: 'PUT', body: dados }),
+  excluir: (id: string) => api<void>(`/products/${id}`, { method: 'DELETE' }),
 }
