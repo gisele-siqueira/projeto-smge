@@ -1,6 +1,7 @@
 package com.smge.smge.authorization.model;
 
 import com.smge.smge.authorization.dto.UserReturnDTO;
+import com.smge.smge.authorization.service.PasswordGenerator;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,7 +57,7 @@ public class UserModel {
         this.permission = "0";
         this.roleLevel = "-1";
         isActive = false;
-        // mudar senha
+        this.senha = PasswordGenerator.gerarSenha();
     }
 
     public UserReturnDTO toUserReturnDTO (){

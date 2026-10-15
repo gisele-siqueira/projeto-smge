@@ -9,6 +9,7 @@ import com.smge.smge.authorization.dto.CreateUserRequest;
 import com.smge.smge.authorization.model.UserModel;
 import com.smge.smge.authorization.repository.UserRepository;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -81,4 +82,5 @@ public class UserService {
                 .map(UserReturnDTO::new)
                 .toList();
     }
+
 }
