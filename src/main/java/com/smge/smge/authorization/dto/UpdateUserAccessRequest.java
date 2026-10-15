@@ -9,10 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Substitui os perfis e as permissões extras de um usuário.
- * Envie listas vazias para remover tudo.
- */
+// substitui perfis e permissões extras; envie listas vazias para remover tudo
 @Getter
 @Setter
 public class UpdateUserAccessRequest {

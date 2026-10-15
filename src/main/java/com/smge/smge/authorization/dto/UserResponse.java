@@ -10,11 +10,7 @@ import java.util.UUID;
 import com.smge.smge.authorization.model.Permissao;
 import com.smge.smge.authorization.model.UserModel;
 
-/**
- * Dados do usuário devolvidos pela API (nunca expõe a senha).
- * "permissoes" é o resultado final (perfis + extras): o front-end usa
- * essa lista para decidir quais menus e botões mostrar.
- */
+// "permissoes" é o resultado final (perfis + extras): o front usa essa lista para liberar menus e botões
 public record UserResponse(
         UUID userId,
         String nome,

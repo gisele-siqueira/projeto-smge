@@ -23,13 +23,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.smge.smge.authorization.security.JwtUsuarioConverter;
 import com.smge.smge.authorization.security.SmgeUserDetailsService;
 
-/**
- * Autenticação por token JWT:
- * 1. POST /api/auth/login (público) confere login e senha e devolve o token.
- * 2. As demais rotas /api/** exigem o header "Authorization: Bearer {token}".
- * O que cada usuário pode fazer é definido por permissão em cada endpoint,
- * com @PreAuthorize("hasAuthority('...')").
- */
+// login é público; demais rotas /api/** exigem Bearer token; autorização por @PreAuthorize em cada endpoint
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
@@ -66,8 +60,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers("/api/**").authenticated()
-                        // fora de /api é o front-end (HTML, JS, CSS) e o console do H2:
-                        // as telas são públicas, os dados vêm da API, que exige token
+                        // fora de /api são as telas (públicas) e o console do H2: os dados vêm da API, que exige token
                         .anyRequest().permitAll())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtUsuarioConverter)));
@@ -75,10 +68,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * Libera o front-end rodando em outra origem (ex.: Vite em http://localhost:5173)
-     * a chamar a API. Origens configuradas em smge.cors.origens.
-     */
+    // libera o front rodando em outra origem (ex.: Vite em :5173) a chamar a API
     @Bean
     public CorsConfigurationSource corsConfigurationSource(
             @Value("${smge.cors.origens}") List<String> origens

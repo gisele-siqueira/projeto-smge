@@ -12,14 +12,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 
-/**
- * API e front-end no mesmo servidor:
- * - Todos os @RestController ficam sob /api (ex.: /api/users), sem precisar
- *   repetir o prefixo em cada controller.
- * - O resto é o front-end (React), servido de classpath:/static. Rotas do React
- *   como /usuarios não existem como arquivo, então devolvem o index.html e
- *   o React Router decide a tela (assim o F5 funciona em qualquer página).
- */
+// @RestController fica sob /api; o resto cai no index.html pro React Router decidir a tela (SPA)
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 

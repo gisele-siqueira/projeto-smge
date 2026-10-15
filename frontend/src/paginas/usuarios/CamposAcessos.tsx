@@ -9,10 +9,7 @@ interface Props {
   modulos: ModuloPermissoes[]
 }
 
-/**
- * Campos "perfisIds" e "permissoesExtras" de um formulário de usuário.
- * Deve ficar dentro de um <Form>.
- */
+// campos "perfisIds" e "permissoesExtras"; precisa ficar dentro de um <Form>
 export function CamposAcessos({ perfis, modulos }: Props) {
   const { pode } = useSessao()
   const perfisSelecionados: string[] = Form.useWatch('perfisIds') ?? []

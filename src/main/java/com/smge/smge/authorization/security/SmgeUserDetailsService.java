@@ -15,10 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.smge.smge.authorization.model.UserModel;
 import com.smge.smge.authorization.repository.UserRepository;
 
-/**
- * Usado no login (POST /auth/login) para conferir login e senha
- * contra os usuários salvos no banco.
- */
 @Service
 public class SmgeUserDetailsService implements UserDetailsService {
 
@@ -28,9 +24,7 @@ public class SmgeUserDetailsService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    /**
-     * Cada permissão efetiva do usuário vira uma "authority" (ex.: PRODUTO_CRIAR).
-     */
+    // cada permissão efetiva do usuário vira uma "authority" (ex.: PRODUTO_CRIAR)
     public static List<GrantedAuthority> authoritiesDe(UserModel user) {
         return user.permissoesEfetivas().stream()
                 .map(permissao -> (GrantedAuthority) new SimpleGrantedAuthority(permissao.name()))

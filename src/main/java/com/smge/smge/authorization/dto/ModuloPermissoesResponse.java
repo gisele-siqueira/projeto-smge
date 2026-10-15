@@ -6,9 +6,6 @@ import java.util.List;
 import com.smge.smge.authorization.model.Modulo;
 import com.smge.smge.authorization.model.Permissao;
 
-/**
- * Permissões agrupadas por módulo, para montar a tela de perfis.
- */
 public record ModuloPermissoesResponse(
         Modulo modulo,
         String nome,

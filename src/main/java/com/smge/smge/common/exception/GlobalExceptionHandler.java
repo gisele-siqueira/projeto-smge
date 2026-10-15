@@ -13,9 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-/**
- * Converte as exceções da aplicação em respostas HTTP padronizadas (RFC 9457 - Problem Details).
- */
+// converte as exceções da aplicação em respostas HTTP padronizadas (RFC 9457 - Problem Details)
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

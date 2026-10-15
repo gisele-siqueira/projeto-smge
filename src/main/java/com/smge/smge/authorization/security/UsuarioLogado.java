@@ -13,10 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.smge.smge.authorization.model.Permissao;
 import com.smge.smge.common.exception.AcessoNegadoException;
 
-/**
- * Acesso ao usuário autenticado na requisição atual e às regras
- * contra escalada de privilégio.
- */
 public final class UsuarioLogado {
 
     private static final Set<String> NOMES_PERMISSOES = Arrays.stream(Permissao.values())
@@ -48,10 +44,7 @@ public final class UsuarioLogado {
         return permissoes;
     }
 
-    /**
-     * Ninguém pode conceder uma permissão que não possui
-     * (nem diretamente, nem por meio de um perfil).
-     */
+    // ninguém pode conceder uma permissão que não possui, nem direto nem via perfil
     public static void exigirPodeConceder(Collection<Permissao> permissoesConcedidas) {
         Set<Permissao> faltando = EnumSet.noneOf(Permissao.class);
         faltando.addAll(permissoesConcedidas);
@@ -63,10 +56,7 @@ public final class UsuarioLogado {
         }
     }
 
-    /**
-     * Ninguém pode gerenciar (desativar, trocar senha, alterar acessos)
-     * um usuário que tenha mais acesso do que ele.
-     */
+    // ninguém gerencia um usuário com mais acessos do que ele mesmo tem
     public static void exigirPodeGerenciar(Collection<Permissao> permissoesDoAlvo) {
         if (!permissoes().containsAll(permissoesDoAlvo)) {
             throw new AcessoNegadoException(

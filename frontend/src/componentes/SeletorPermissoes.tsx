@@ -12,11 +12,7 @@ interface Props {
   viaPerfil?: Permissao[]
 }
 
-/**
- * Checklist de permissões agrupadas por módulo.
- * Permissões que o usuário logado não possui ficam bloqueadas, porque o back-end
- * não deixa ninguém conceder o que não tem (proteção contra escalada de privilégio).
- */
+// permissões que o usuário logado não possui ficam bloqueadas (o back-end também não deixa concedê-las)
 export function SeletorPermissoes({ modulos, value = [], onChange, viaPerfil = [] }: Props) {
   const { pode } = useSessao()
   const selecionadas = new Set(value)

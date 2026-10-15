@@ -21,11 +21,6 @@ import com.smge.smge.authorization.service.PerfilService;
 
 import jakarta.validation.Valid;
 
-/**
- * Perfis de acesso e catálogo de permissões.
- * Consultar é liberado a quem gerencia usuários (para atribuir perfis);
- * criar, editar e excluir exige PERFIL_GERENCIAR.
- */
 @RestController
 public class PerfilController {
 

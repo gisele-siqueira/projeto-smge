@@ -66,9 +66,7 @@ public class UserModel {
     }
 
 
-    /**
-     * Recebe a senha JÁ CRIPTOGRAFADA e renova a validade.
-     */
+    // recebe a senha já criptografada, e renova a validade
     public void definirSenha(String novaSenha) {
         LocalDateTime agora = LocalDateTime.now();
         this.senha = novaSenha;
@@ -82,9 +80,6 @@ public class UserModel {
     }
 
 
-    /**
-     * Todas as permissões do usuário: as dos perfis somadas às extras.
-     */
     public Set<Permissao> permissoesEfetivas() {
         Set<Permissao> todas = EnumSet.noneOf(Permissao.class);
         perfis.forEach(perfil -> todas.addAll(perfil.getPermissoes()));

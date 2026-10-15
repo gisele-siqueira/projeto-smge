@@ -34,11 +34,7 @@ public class AuthController {
         this.userService = userService;
     }
 
-    /**
-     * Confere login e senha e devolve o token de acesso.
-     * Erros (senha errada, usuário desativado, senha expirada) viram 401
-     * no GlobalExceptionHandler.
-     */
+    // erros (senha errada, desativado, expirada) viram 401 no GlobalExceptionHandler
     @PostMapping("/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
 

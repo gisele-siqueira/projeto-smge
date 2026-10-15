@@ -16,10 +16,6 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 
-/**
- * Chave e algoritmo (HS256) usados para assinar e validar os tokens.
- * O segredo vem de smge.jwt.segredo (variável de ambiente SMGE_JWT_SEGREDO).
- */
 @Configuration
 public class JwtConfig {
 

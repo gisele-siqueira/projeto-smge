@@ -104,9 +104,7 @@ public class PerfilService {
         perfilRepository.delete(perfil);
     }
 
-    /**
-     * Busca os perfis pelos ids, falhando se algum não existir.
-     */
+    // falha se algum id não existir
     @Transactional(readOnly = true)
     public Set<PerfilModel> buscarPerfis(Collection<UUID> ids) {
 

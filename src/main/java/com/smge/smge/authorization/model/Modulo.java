@@ -1,8 +1,5 @@
 package com.smge.smge.authorization.model;
 
-/**
- * Módulos do sistema. Cada permissão pertence a um módulo.
- */
 public enum Modulo {
 
     USUARIOS("Usuários e acessos"),

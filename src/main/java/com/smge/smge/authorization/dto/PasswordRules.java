@@ -1,8 +1,6 @@
 package com.smge.smge.authorization.dto;
 
-/**
- * Regras de senha compartilhadas entre os DTOs.
- */
+// evita duplicar a regex em cada DTO
 public final class PasswordRules {
 
     // pelo menos uma letra e um número

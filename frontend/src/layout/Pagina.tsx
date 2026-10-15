@@ -9,9 +9,6 @@ interface Props {
   children: ReactNode
 }
 
-/**
- * Moldura padrão das telas: título, descrição, ações e conteúdo em um card.
- */
 export function Pagina({ titulo, descricao, acoes, children }: Props) {
   return (
     <Flex vertical gap={16}>

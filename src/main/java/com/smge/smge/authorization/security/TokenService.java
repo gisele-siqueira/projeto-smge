@@ -11,11 +11,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
-/**
- * Gera o token de acesso devolvido no login.
- * O token só identifica o usuário (subject = login): as permissões são
- * lidas do banco a cada requisição, para que mudanças valham na hora.
- */
+// token só carrega o subject (login); permissões são lidas do banco a cada requisição, pra mudanças valerem na hora
 @Service
 public class TokenService {
 

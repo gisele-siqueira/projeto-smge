@@ -16,13 +16,6 @@ import com.smge.smge.authorization.model.UserModel;
 import com.smge.smge.authorization.repository.PerfilRepository;
 import com.smge.smge.authorization.repository.UserRepository;
 
-/**
- * Executado a cada inicialização:
- * 1. Garante o perfil "Administrador" com TODAS as permissões
- *    (inclusive as que forem criadas em versões futuras).
- * 2. Como o sistema não tem auto-cadastro, cria o usuário admin inicial
- *    se ainda não existir nenhum usuário com esse perfil.
- */
 @Component
 public class AdminSeeder implements CommandLineRunner {
 

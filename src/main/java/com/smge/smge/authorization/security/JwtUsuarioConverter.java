@@ -16,11 +16,7 @@ import org.springframework.stereotype.Component;
 import com.smge.smge.authorization.model.UserModel;
 import com.smge.smge.authorization.repository.UserRepository;
 
-/**
- * Executado a cada requisição com token válido (assinatura e validade já conferidas).
- * Busca o usuário no banco para que desativação, mudança de acessos e troca
- * de senha tenham efeito imediato, sem esperar o token expirar.
- */
+// busca o usuário no banco a cada requisição, pra desativação/troca de senha valerem na hora (sem esperar o token expirar)
 @Component
 public class JwtUsuarioConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 

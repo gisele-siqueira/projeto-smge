@@ -1,8 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
 
-/**
- * Carrega dados da API ao abrir a tela e permite recarregar depois de salvar.
- */
 export function useCarregar<T>(buscar: () => Promise<T>, inicial: T) {
   const [dados, setDados] = useState<T>(inicial)
   const [carregando, setCarregando] = useState(true)

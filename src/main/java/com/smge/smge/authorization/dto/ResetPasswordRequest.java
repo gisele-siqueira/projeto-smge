@@ -6,9 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Usado pelo ADMIN para redefinir a senha de outro usuário.
- */
+// usado pelo admin para redefinir a senha de outro usuário
 @Getter
 @Setter
 public class ResetPasswordRequest {

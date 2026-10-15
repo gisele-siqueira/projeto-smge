@@ -11,10 +11,7 @@ interface Props {
   permissoes?: Permissao[]
 }
 
-/**
- * Esconde a tela de quem não está logado ou não tem permissão.
- * É só conveniência visual: quem protege os dados de verdade é o back-end.
- */
+// é só conveniência visual: quem protege os dados de verdade é o back-end
 export function RotaProtegida({ children, permissoes }: Props) {
   const { usuario, carregando, pode } = useSessao()
   const location = useLocation()

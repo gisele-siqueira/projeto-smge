@@ -1,13 +1,6 @@
 package com.smge.smge.authorization.model;
 
-/**
- * Permissões granulares do sistema.
- *
- * Cada permissão protege endpoints reais via @PreAuthorize("hasAuthority('NOME')"),
- * por isso elas são definidas no código e não pela tela.
- * Ao criar uma funcionalidade nova, adicione aqui a permissão correspondente:
- * o perfil "Administrador" recebe automaticamente todas ao iniciar o sistema.
- */
+// funcionalidade nova: adicione a permissão aqui; o perfil "Administrador" recebe todas automaticamente
 public enum Permissao {
 
     // ---------- Usuários e acessos ----------

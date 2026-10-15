@@ -6,9 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Usado pelo próprio usuário para trocar a senha.
- */
+// usado pelo próprio usuário para trocar a senha
 @Getter
 @Setter
 public class ChangePasswordRequest {

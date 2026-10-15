@@ -25,11 +25,6 @@ import com.smge.smge.authorization.service.UserService;
 
 import jakarta.validation.Valid;
 
-/**
- * Gestão de usuários.
- * Rotas /api/users/me/** -> qualquer usuário autenticado.
- * Demais rotas -> conforme a permissão de cada endpoint.
- */
 @RestController
 @RequestMapping("/users")
 public class UserController {

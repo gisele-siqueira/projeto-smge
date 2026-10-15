@@ -9,10 +9,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * Perfil de acesso: um grupo de permissões que o admin monta pela aplicação
- * (ex.: "Estoquista", "Faturamento") e atribui aos usuários.
- */
 @Getter
 @Setter
 @NoArgsConstructor

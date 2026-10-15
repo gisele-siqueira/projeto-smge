@@ -82,9 +82,6 @@ public class UserService {
         return UserResponse.from(buscarEntidadePorLogin(login));
     }
 
-    /**
-     * Substitui os perfis e as permissões extras do usuário.
-     */
     @Transactional
     public UserResponse atualizarAcessos(UUID id, UpdateUserAccessRequest request) {
 
@@ -112,18 +109,12 @@ public class UserService {
         buscarParaGerenciar(id, "Você não pode reativar o próprio usuário").ativarUser();
     }
 
-    /**
-     * Redefine a senha de outro usuário (ex.: esqueceu a senha ou ela expirou).
-     */
     @Transactional
     public void redefinirSenha(UUID id, String novaSenha) {
         buscarParaGerenciar(id, "Para trocar a própria senha use /api/users/me/senha")
                 .definirSenha(passwordEncoder.encode(novaSenha));
     }
 
-    /**
-     * O próprio usuário troca a senha, confirmando a senha atual.
-     */
     @Transactional
     public void alterarPropriaSenha(String login, ChangePasswordRequest request) {
         UserModel user = buscarEntidadePorLogin(login);
@@ -139,10 +130,7 @@ public class UserService {
         user.definirSenha(passwordEncoder.encode(request.getNovaSenha()));
     }
 
-    /**
-     * Busca um usuário que o solicitante vai gerenciar: não pode ser ele mesmo
-     * nem alguém com mais acessos que ele.
-     */
+    // não pode gerenciar a si mesmo, nem alguém com mais acessos que ele
     private UserModel buscarParaGerenciar(UUID id, String mensagemSeForOProprio) {
         UserModel user = buscarEntidade(id);
 
