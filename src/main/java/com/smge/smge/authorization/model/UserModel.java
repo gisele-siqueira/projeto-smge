@@ -1,5 +1,6 @@
 package com.smge.smge.authorization.model;
 
+import com.smge.smge.authorization.dto.UserReturnDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,5 +54,9 @@ public class UserModel {
         // zerar roleLevel
         isActive = false;
         // mudar senha
+    }
+
+    public UserReturnDTO toUserReturnDTO (){
+        return new UserReturnDTO(this.userId, this.nome);
     }
 }
