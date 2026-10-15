@@ -1,5 +1,7 @@
 package com.smge.smge.authorization.model;
 
+import com.smge.smge.authorization.dto.UserReturnDTO;
+import com.smge.smge.authorization.service.PasswordGenerator;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,8 +32,11 @@ public class UserModel {
     @Column(nullable = false)
     LocalDateTime senhaExpiraEm;
 
-    //permission;
-    //roleLevel;
+    @Column()
+    String permission;
+
+    @Column()
+    String roleLevel;
 
     @Column(nullable = false)
     boolean isActive = true;
@@ -49,9 +54,13 @@ public class UserModel {
 
 
     public void desativarUser() {
-        // zerar permission
-        // zerar roleLevel
+        this.permission = "0";
+        this.roleLevel = "-1";
         isActive = false;
-        // mudar senha
+        this.senha = PasswordGenerator.gerarSenha();
+    }
+
+    public UserReturnDTO toUserReturnDTO (){
+        return new UserReturnDTO(this.userId, this.nome);
     }
 }
