@@ -1,10 +1,17 @@
-import { DeleteOutlined, EditOutlined, LockOutlined, PlusOutlined } from '@ant-design/icons'
+import {
+  DeleteOutlined,
+  EditOutlined,
+  LockOutlined,
+  PlusOutlined,
+  SafetyCertificateFilled,
+} from '@ant-design/icons'
 import { Alert, App, Button, Popconfirm, Space, Table, Tag, Tooltip, Typography } from 'antd'
 import { useState } from 'react'
 
 import { perfisApi } from '../../api/endpoints'
 import type { ModuloPermissoes, Perfil } from '../../api/tipos'
 import { Pagina } from '../../layout/Pagina'
+import { corDoIndice } from '../../util/cores'
 import { useCarregar } from '../../util/useCarregar'
 import { PerfilModal } from './PerfilModal'
 
@@ -40,6 +47,8 @@ export function PerfisPage() {
     <Pagina
       titulo="Perfis de acesso"
       descricao="Grupos de permissões atribuídos aos usuários (ex.: Estoquista, Faturamento)."
+      icone={<SafetyCertificateFilled />}
+      cor={corDoIndice(1)}
       acoes={
         <Button type="primary" icon={<PlusOutlined />} onClick={() => abrir(null)}>
           Novo perfil

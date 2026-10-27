@@ -1,9 +1,9 @@
 import {
-  HomeOutlined,
-  SafetyOutlined,
-  SettingOutlined,
-  ShopOutlined,
-  TagsOutlined,
+  HomeFilled,
+  SafetyCertificateFilled,
+  SettingFilled,
+  ShopFilled,
+  TagsFilled,
   TeamOutlined,
 } from '@ant-design/icons'
 import type { ReactNode } from 'react'
@@ -22,11 +22,11 @@ export interface ItemMenu {
 
 // tela nova: adicione aqui, com a mesma permissão usada na rota (App.tsx) e no endpoint
 export const MENU: ItemMenu[] = [
-  { chave: '/', titulo: 'Início', icone: <HomeOutlined /> },
+  { chave: '/', titulo: 'Início', icone: <HomeFilled /> },
   {
     chave: 'administracao',
     titulo: 'Administração',
-    icone: <SettingOutlined />,
+    icone: <SettingFilled />,
     filhos: [
       {
         chave: '/usuarios',
@@ -37,7 +37,7 @@ export const MENU: ItemMenu[] = [
       {
         chave: '/perfis',
         titulo: 'Perfis de acesso',
-        icone: <SafetyOutlined />,
+        icone: <SafetyCertificateFilled />,
         permissoes: ['PERFIL_GERENCIAR'],
       },
     ],
@@ -45,12 +45,12 @@ export const MENU: ItemMenu[] = [
   {
     chave: 'estoque',
     titulo: 'Estoque',
-    icone: <ShopOutlined />,
+    icone: <ShopFilled />,
     filhos: [
       {
         chave: '/produtos',
         titulo: 'Produtos',
-        icone: <TagsOutlined />,
+        icone: <TagsFilled />,
         permissoes: ['PRODUTO_VISUALIZAR'],
       },
     ],
@@ -71,4 +71,10 @@ export function filtrarMenu(
     }
     return [item]
   })
+}
+
+// título da tela atual, para o cabeçalho (ex.: "/usuarios" -> "Usuários")
+export function tituloDaRota(caminho: string): string | undefined {
+  const folhas = MENU.flatMap((item) => item.filhos ?? [item])
+  return folhas.find((item) => item.chave === caminho)?.titulo
 }

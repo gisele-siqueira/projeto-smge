@@ -1,4 +1,11 @@
-import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined, WarningOutlined } from '@ant-design/icons'
+import {
+  DeleteOutlined,
+  EditOutlined,
+  PlusOutlined,
+  SearchOutlined,
+  TagsFilled,
+  WarningOutlined,
+} from '@ant-design/icons'
 import { Alert, App, Button, Flex, Input, Popconfirm, Space, Table, Tag, Tooltip, Typography } from 'antd'
 import { useState } from 'react'
 
@@ -6,6 +13,7 @@ import { produtosApi } from '../../api/endpoints'
 import type { Produto } from '../../api/tipos'
 import { useSessao } from '../../auth/useSessao'
 import { Pagina } from '../../layout/Pagina'
+import { corDoIndice } from '../../util/cores'
 import { formatarData, formatarMoeda } from '../../util/formato'
 import { useCarregar } from '../../util/useCarregar'
 import { ProdutoModal } from './ProdutoModal'
@@ -51,6 +59,8 @@ export function ProdutosPage() {
     <Pagina
       titulo="Produtos"
       descricao="Itens do estoque: quantidade, preço e unidade de medida."
+      icone={<TagsFilled />}
+      cor={corDoIndice(2)}
       acoes={
         podeCriar && (
           <Button type="primary" icon={<PlusOutlined />} onClick={() => abrir(null)}>

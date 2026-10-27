@@ -1,5 +1,6 @@
-import { LockOutlined, UserOutlined } from '@ant-design/icons'
+import { LockFilled, UserOutlined } from '@ant-design/icons'
 import { Alert, Button, Card, Flex, Form, Input, Typography } from 'antd'
+import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 
@@ -54,40 +55,92 @@ export function LoginPage() {
   }
 
   return (
-    <Flex justify="center" align="center" style={{ minHeight: '100vh', padding: 16, background: '#f0f2f5' }}>
-      <Card style={{ width: '100%', maxWidth: 380 }}>
-        <Flex vertical align="center" style={{ marginBottom: 24 }}>
-          <Typography.Title level={2} style={{ margin: 0, letterSpacing: 2 }}>
-            SMGE
-          </Typography.Title>
-          <Typography.Text type="secondary">Sistema de Gestão Empresarial</Typography.Text>
-        </Flex>
+    <Flex
+      justify="center"
+      align="center"
+      style={{
+        minHeight: '100vh',
+        padding: 16,
+        position: 'relative',
+        overflow: 'hidden',
+        background: 'linear-gradient(135deg, #0d1b2e 0%, #15213b 45%, #1b1333 100%)',
+      }}
+    >
+      <div
+        className="blob-login"
+        style={{ width: 420, height: 420, background: '#1f6feb', top: '-10%', left: '-8%' }}
+      />
+      <div
+        className="blob-login"
+        style={{
+          width: 360,
+          height: 360,
+          background: '#7c3aed',
+          bottom: '-12%',
+          right: '-6%',
+          animationDelay: '-6s',
+        }}
+      />
 
-        {estado.aviso && !erro && (
-          <Alert type="info" showIcon title={estado.aviso} style={{ marginBottom: 16 }} />
-        )}
-        {erro && (
-          <Alert
-            type={erro.tipo}
-            showIcon
-            title={erro.titulo}
-            description={erro.descricao}
-            style={{ marginBottom: 16 }}
-          />
-        )}
+      <motion.div
+        initial={{ opacity: 0, y: 24, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.45, ease: 'easeOut' }}
+        style={{ position: 'relative', width: '100%', maxWidth: 380 }}
+      >
+        <Card variant="borderless" style={{ boxShadow: '0 24px 60px -12px rgba(0, 0, 0, 0.5)' }}>
+          <Flex vertical align="center" style={{ marginBottom: 24 }}>
+            <div
+              style={{
+                width: 52,
+                height: 52,
+                borderRadius: 14,
+                background: 'linear-gradient(135deg, #1f6feb, #3b82f6)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 800,
+                color: '#fff',
+                fontSize: 24,
+                marginBottom: 12,
+              }}
+            >
+              S
+            </div>
+            <Typography.Title level={2} style={{ margin: 0, letterSpacing: 2 }}>
+              SMGE
+            </Typography.Title>
+            <Typography.Text type="secondary">Sistema de Gestão Empresarial</Typography.Text>
+          </Flex>
 
-        <Form layout="vertical" onFinish={aoEnviar} requiredMark={false} disabled={enviando}>
-          <Form.Item name="login" label="Login" rules={[{ required: true, message: 'Informe o login' }]}>
-            <Input prefix={<UserOutlined />} autoComplete="username" autoFocus size="large" />
-          </Form.Item>
-          <Form.Item name="senha" label="Senha" rules={[{ required: true, message: 'Informe a senha' }]}>
-            <Input.Password prefix={<LockOutlined />} autoComplete="current-password" size="large" />
-          </Form.Item>
-          <Button type="primary" htmlType="submit" block size="large" loading={enviando}>
-            Entrar
-          </Button>
-        </Form>
-      </Card>
+          {estado.aviso && !erro && (
+            <Alert type="info" showIcon title={estado.aviso} style={{ marginBottom: 16 }} />
+          )}
+          {erro && (
+            <Alert
+              type={erro.tipo}
+              showIcon
+              title={erro.titulo}
+              description={erro.descricao}
+              style={{ marginBottom: 16 }}
+            />
+          )}
+
+          <Form layout="vertical" onFinish={aoEnviar} requiredMark={false} disabled={enviando}>
+            <Form.Item name="login" label="Login" rules={[{ required: true, message: 'Informe o login' }]}>
+              <Input prefix={<UserOutlined />} autoComplete="username" autoFocus size="large" />
+            </Form.Item>
+            <Form.Item name="senha" label="Senha" rules={[{ required: true, message: 'Informe a senha' }]}>
+              <Input.Password prefix={<LockFilled />} autoComplete="current-password" size="large" />
+            </Form.Item>
+            <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
+              <Button type="primary" htmlType="submit" block size="large" loading={enviando}>
+                Entrar
+              </Button>
+            </motion.div>
+          </Form>
+        </Card>
+      </motion.div>
     </Flex>
   )
 }

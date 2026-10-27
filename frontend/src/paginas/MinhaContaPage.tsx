@@ -1,10 +1,12 @@
-import { App, Button, Col, Descriptions, Divider, Form, Input, Row, Tag, Typography } from 'antd'
+import { KeyOutlined, LoginOutlined, UserOutlined } from '@ant-design/icons'
+import { App, Avatar, Button, Col, Divider, Flex, Form, Input, Row, Tag, Typography } from 'antd'
 import { useState } from 'react'
 
 import { usuariosApi } from '../api/endpoints'
 import { useSessao } from '../auth/useSessao'
 import { Pagina } from '../layout/Pagina'
-import { formatarData } from '../util/formato'
+import { corDoIndice } from '../util/cores'
+import { diasAte, formatarData } from '../util/formato'
 import { regraConfirmarSenha, regrasSenha } from '../util/regrasSenha'
 
 interface FormSenha {
@@ -36,26 +38,79 @@ export function MinhaContaPage() {
     }
   }
 
+  const diasParaExpirar = diasAte(usuario.senhaExpiraEm)
+  const corExpiracao = diasParaExpirar < 0 ? 'red' : diasParaExpirar <= 7 ? 'orange' : 'green'
+
   return (
-    <Pagina titulo="Minha conta" descricao="Seus dados e a troca de senha.">
-      <Descriptions column={{ xs: 1, md: 2 }} bordered size="small">
-        <Descriptions.Item label="Nome">{usuario.nome}</Descriptions.Item>
-        <Descriptions.Item label="Login">{usuario.login}</Descriptions.Item>
-        <Descriptions.Item label="Perfis">
-          {usuario.perfis.length
-            ? usuario.perfis.map((p) => (
+    <Pagina titulo="Minha conta" descricao="Seus dados e a troca de senha." icone={<UserOutlined />} cor={corDoIndice(3)}>
+      <Flex
+        align="center"
+        gap={20}
+        wrap
+        style={{
+          padding: 20,
+          borderRadius: 12,
+          marginBottom: 24,
+          background: `${corDoIndice(3)}`,
+        }}
+      >
+        <Avatar size={72} style={{ background: 'rgba(255, 255, 255, 0.25)', flexShrink: 0 }} icon={<UserOutlined />} />
+        <div>
+          <Typography.Title level={4} style={{ margin: 0, color: '#fff' }}>
+            {usuario.nome}
+          </Typography.Title>
+          <Flex align="center" gap={6} style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
+            <LoginOutlined />
+            <Typography.Text style={{ color: 'rgba(255, 255, 255, 0.85)' }}>{usuario.login}</Typography.Text>
+          </Flex>
+        </div>
+      </Flex>
+
+      <Flex vertical gap={12} style={{ marginBottom: 24 }}>
+        <div>
+          <Typography.Text type="secondary">Perfis</Typography.Text>
+          <div style={{ marginTop: 4 }}>
+            {usuario.perfis.length ? (
+              usuario.perfis.map((p) => (
                 <Tag key={p.perfilId} color="blue">
                   {p.nome}
                 </Tag>
               ))
-            : '—'}
-        </Descriptions.Item>
-        <Descriptions.Item label="Senha expira em">{formatarData(usuario.senhaExpiraEm)}</Descriptions.Item>
-      </Descriptions>
+            ) : (
+              <Typography.Text type="secondary">—</Typography.Text>
+            )}
+          </div>
+        </div>
+        <div>
+          <Typography.Text type="secondary">Senha expira em</Typography.Text>
+          <div style={{ marginTop: 4 }}>
+            <Tag color={corExpiracao}>{formatarData(usuario.senhaExpiraEm)}</Tag>
+          </div>
+        </div>
+      </Flex>
 
       <Divider />
 
-      <Typography.Title level={5}>Trocar senha</Typography.Title>
+      <Flex align="center" gap={10} style={{ marginBottom: 16 }}>
+        <div
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: 9,
+            background: corDoIndice(3),
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#fff',
+            fontSize: 15,
+          }}
+        >
+          <KeyOutlined />
+        </div>
+        <Typography.Title level={5} style={{ margin: 0 }}>
+          Trocar senha
+        </Typography.Title>
+      </Flex>
       <Row>
         <Col xs={24} md={12} lg={8}>
           <Form form={form} layout="vertical" onFinish={trocarSenha} disabled={salvando}>
