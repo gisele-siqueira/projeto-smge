@@ -82,6 +82,11 @@ public class UserService {
         return UserResponse.from(buscarEntidadePorLogin(login));
     }
 
+    @Transactional(readOnly = true)
+    public UUID idDoUsuarioLogado() {
+        return buscarEntidadePorLogin(UsuarioLogado.login()).getUserId();
+    }
+
     @Transactional
     public UserResponse atualizarAcessos(UUID id, UpdateUserAccessRequest request) {
 
