@@ -1,12 +1,13 @@
 package com.smge.smge.authorization.model;
 
-import com.smge.smge.authorization.dto.UserReturnDTO;
-import com.smge.smge.authorization.service.PasswordGenerator;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDateTime;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -16,51 +17,78 @@ import java.util.UUID;
 @Table(name = "users")
 public class UserModel {
 
+    public static final int DIAS_VALIDADE_SENHA = 90;
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    UUID userId;
+    private UUID userId;
 
     @Column(nullable = false)
-    String nome;
+    private String nome;
 
     @Column(nullable = false, unique = true)
-    String login;
+    private String login;
 
     @Column(nullable = false)
-    String senha;
+    private String senha;
 
     @Column(nullable = false)
-    LocalDateTime senhaExpiraEm;
+    private LocalDateTime senhaExpiraEm;
 
-    @Column()
-    String permission;
+    // tokens emitidos antes desta data deixam de valer (ex.: após trocar a senha)
+    @Column(nullable = false)
+    private LocalDateTime senhaAlteradaEm;
 
-    @Column()
-    String roleLevel;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_perfis",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "perfil_id")
+    )
+    private Set<PerfilModel> perfis = new HashSet<>();
+
+    // permissões avulsas, além das que vêm dos perfis
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_permissoes_extras", joinColumns = @JoinColumn(name = "user_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "permissao", nullable = false)
+    private Set<Permissao> permissoesExtras = new HashSet<>();
 
     @Column(nullable = false)
-    boolean isActive = true;
+    private boolean isActive = true;
 
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime criadoEm;
 
-    public void definirSenha(String novaSenha) {
-        this.senha = novaSenha;
-        this.senhaExpiraEm = LocalDateTime.now().plusDays(90);
+    @PrePersist
+    void aoCriar() {
+        this.criadoEm = LocalDateTime.now();
     }
 
+    // recebe a senha já criptografada, e renova a validade
+    public void definirSenha(String novaSenha) {
+        LocalDateTime agora = LocalDateTime.now();
+        this.senha = novaSenha;
+        this.senhaAlteradaEm = agora;
+        this.senhaExpiraEm = agora.plusDays(DIAS_VALIDADE_SENHA);
+    }
 
     public boolean senhaExpirada() {
         return LocalDateTime.now().isAfter(senhaExpiraEm);
     }
 
-
-    public void desativarUser() {
-        this.permission = "0";
-        this.roleLevel = "-1";
-        isActive = false;
-        this.senha = PasswordGenerator.gerarSenha();
+    public Set<Permissao> permissoesEfetivas() {
+        Set<Permissao> todas = EnumSet.noneOf(Permissao.class);
+        perfis.forEach(perfil -> todas.addAll(perfil.getPermissoes()));
+        todas.addAll(permissoesExtras);
+        return todas;
     }
 
-    public UserReturnDTO toUserReturnDTO (){
-        return new UserReturnDTO(this.userId, this.nome);
+    public void desativarUser() {
+        isActive = false;
+    }
+
+    public void ativarUser() {
+        isActive = true;
     }
 }

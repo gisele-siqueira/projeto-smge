@@ -1,6 +1,6 @@
 package com.smge.smge.authorization.repository;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,8 +11,10 @@ public interface UserRepository extends JpaRepository<UserModel, UUID> {
 
     boolean existsByLogin(String login);
 
-    List<UserModel> findByIsActiveTrue();
+    Optional<UserModel> findByLogin(String login);
 
-    List<UserModel> findByIsActiveFalse();
+    boolean existsByPerfis_Nome(String nomePerfil);
+
+    boolean existsByPerfis_PerfilId(UUID perfilId);
 
 }
