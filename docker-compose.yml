@@ -1,0 +1,41 @@
+services:
+  backend:
+    image: ghcr.io/gisele-siqueira/projeto-smge/backend:latest
+    container_name: smge-backend
+    restart: unless-stopped
+    environment:
+      # Credenciais do administrador inicial (criado na primeira execução se não existir)
+      SMGE_ADMIN_LOGIN: ${SMGE_ADMIN_LOGIN:-admin}
+      SMGE_ADMIN_SENHA: ${SMGE_ADMIN_SENHA:-Admin@123}
+
+      # Chave secreta de assinatura dos tokens JWT (mínimo de 32 caracteres)
+      SMGE_JWT_SEGREDO: ${SMGE_JWT_SEGREDO:-dev-somente-local-troque-em-producao-0123456789}
+      SMGE_JWT_VALIDADE_HORAS: ${SMGE_JWT_VALIDADE_HORAS:-8}
+
+      # Origens autorizadas para chamadas diretas via CORS
+      SMGE_CORS_ORIGENS: ${SMGE_CORS_ORIGENS:-http://localhost,http://localhost:80,http://localhost:5173}
+
+      # Opcional: configurar persistência em arquivo H2 se desejado (padrão é memória: jdbc:h2:mem:smge)
+      # SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:h2:mem:smge}
+    ports:
+      # Porta da API do backend exposta para o host (opcional para acesso direto/testes)
+      - "${BACKEND_PORT:-8080}:8080"
+    networks:
+      - smge-network
+
+  frontend:
+    image: ghcr.io/gisele-siqueira/projeto-smge/frontend:latest
+    container_name: smge-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      # Porta padrão HTTP para acesso à aplicação web pelo navegador
+      - "${FRONTEND_PORT:-80}:80"
+    networks:
+      - smge-network
+
+networks:
+  smge-network:
+    name: smge-network
+    driver: bridge

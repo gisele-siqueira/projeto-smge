@@ -1,0 +1,30 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDEs e editores
+.idea
+.vscode
+*.iml
+*.ipr
+*.iws
+
+# Diretório de build local
+target/
+build/
+
+# Logs
+*.log
+logs/
+
+# Frontend (o backend é construído de forma independente)
+frontend/node/
+frontend/node_modules/
+frontend/dist/
+frontend/.tmp/
+
+# Documentações e arquivos temporários
+HELP.md
+.DS_Store
+Thumbs.db
