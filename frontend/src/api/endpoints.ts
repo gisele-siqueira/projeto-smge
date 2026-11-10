@@ -9,6 +9,7 @@ import type {
   Perfil,
   PerfilForm,
   Produto,
+  ProdutoAuditoria,
   ProdutoForm,
   Usuario,
 } from './tipos'
@@ -48,4 +49,5 @@ export const produtosApi = {
   atualizar: (id: string, dados: ProdutoForm) =>
     api<Produto>(`/products/${id}`, { method: 'PUT', body: dados }),
   excluir: (id: string) => api<void>(`/products/${id}`, { method: 'DELETE' }),
+  historico: (id: string) => api<ProdutoAuditoria[]>(`/products/${id}/history`),
 }

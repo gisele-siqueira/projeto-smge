@@ -93,3 +93,17 @@ export interface ProdutoForm {
   unidadeMedida: string
   dataCadastro: string
 }
+
+// Mantenha em sincronia com ProductAuditModel.java
+export type OperacaoAuditoria = 'CRIACAO' | 'ATUALIZACAO' | 'EXCLUSAO'
+
+export interface ProdutoAuditoria {
+  auditId: string
+  productId: string
+  usuarioId: string
+  dataAlteracao: string
+  operacao: OperacaoAuditoria
+  campoAlterado: string
+  valorAnterior: string | null
+  valorNovo: string | null
+}
