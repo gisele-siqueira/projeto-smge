@@ -95,6 +95,20 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Exportação de relatórios: Excel -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.2.5</version>
+        </dependency>
+
+        <!-- Exportação de relatórios: PDF -->
+        <dependency>
+            <groupId>com.github.librepdf</groupId>
+            <artifactId>openpdf</artifactId>
+            <version>1.3.30</version>
+        </dependency>
+
     </dependencies>
 
     <build>

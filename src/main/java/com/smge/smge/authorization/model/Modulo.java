@@ -3,7 +3,8 @@ package com.smge.smge.authorization.model;
 public enum Modulo {
 
     USUARIOS("Usuários e acessos"),
-    ESTOQUE("Estoque");
+    ESTOQUE("Estoque"),
+    VENDAS("Vendas");
 
     private final String nome;
 

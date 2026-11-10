@@ -3,6 +3,7 @@ package com.smge.smge.product.service;
 import com.smge.smge.authorization.service.UserService;
 import com.smge.smge.common.exception.ConflitoException;
 import com.smge.smge.common.exception.RecursoNaoEncontradoException;
+import com.smge.smge.common.exception.RegraNegocioException;
 import com.smge.smge.product.audit.ProductAuditService;
 import com.smge.smge.product.model.ProductModel;
 import com.smge.smge.product.repository.ProductRepository;
@@ -134,6 +135,40 @@ public class ProductService {
                 valorAnterior,
                 valorNovo
         );
+    }
+
+    // usado pelo módulo de vendas: confere e desconta o estoque, registrando no mesmo audit trail
+    @Transactional
+    public ProductModel baixarEstoque(UUID produtoId, int quantidade) {
+        ProductModel produto = buscarPorId(produtoId);
+
+        if (produto.getQuantidade() < quantidade) {
+            throw new RegraNegocioException(
+                    "Estoque insuficiente para " + produto.getNome()
+                            + ": disponível " + produto.getQuantidade() + ", solicitado " + quantidade);
+        }
+
+        int quantidadeAnterior = produto.getQuantidade();
+        produto.setQuantidade(quantidadeAnterior - quantidade);
+
+        auditService.registrar(produtoId, userService.idDoUsuarioLogado(), "ATUALIZACAO",
+                "quantidade", quantidadeAnterior, produto.getQuantidade());
+
+        return productRepository.save(produto);
+    }
+
+    // usado ao cancelar uma venda: devolve a quantidade ao estoque
+    @Transactional
+    public void reporEstoque(UUID produtoId, int quantidade) {
+        ProductModel produto = buscarPorId(produtoId);
+
+        int quantidadeAnterior = produto.getQuantidade();
+        produto.setQuantidade(quantidadeAnterior + quantidade);
+
+        auditService.registrar(produtoId, userService.idDoUsuarioLogado(), "ATUALIZACAO",
+                "quantidade", quantidadeAnterior, produto.getQuantidade());
+
+        productRepository.save(produto);
     }
 
     @Transactional
