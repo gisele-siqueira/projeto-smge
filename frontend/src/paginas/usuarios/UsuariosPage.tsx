@@ -5,6 +5,7 @@ import {
   SafetyOutlined,
   SearchOutlined,
   StopOutlined,
+  TeamOutlined,
 } from '@ant-design/icons'
 import { Alert, App, Button, Flex, Input, Popconfirm, Space, Table, Tag, Tooltip, Typography } from 'antd'
 import { useCallback, useState } from 'react'
@@ -13,6 +14,7 @@ import { perfisApi, usuariosApi } from '../../api/endpoints'
 import type { ModuloPermissoes, Perfil, Usuario } from '../../api/tipos'
 import { useSessao } from '../../auth/useSessao'
 import { Pagina } from '../../layout/Pagina'
+import { corDoIndice } from '../../util/cores'
 import { diasAte, formatarData } from '../../util/formato'
 import { useCarregar } from '../../util/useCarregar'
 import { AcessosModal } from './AcessosModal'
@@ -72,6 +74,8 @@ export function UsuariosPage() {
     <Pagina
       titulo="Usuários"
       descricao="Contas de acesso ao sistema. Não há auto-cadastro: as contas são criadas aqui."
+      icone={<TeamOutlined />}
+      cor={corDoIndice(0)}
       acoes={
         podeGerenciar && (
           <Button type="primary" icon={<PlusOutlined />} onClick={() => setNovoAberto(true)}>

@@ -1,0 +1,151 @@
+:root {
+  --cor-primaria: #1f6feb;
+  --cor-acento: #7c3aed;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #f4f6fb;
+}
+
+/* barra lateral: expande/recolhe devagar (o AntD anima via "flex", não "width") */
+.ant-layout-sider {
+  transition:
+    flex 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    min-width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    max-width 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 999px;
+}
+
+::selection {
+  background: var(--cor-primaria);
+  color: #fff;
+}
+
+/* recolhida, a seta de submenu some: sem ela o ícone fica centralizado, igual aos itens sem filhos */
+.ant-menu-inline-collapsed .ant-menu-submenu-arrow {
+  display: none;
+}
+
+/* item ativo do menu: bloco sólido atrás do ícone, com leve "pop" ao ser selecionado */
+.ant-menu-dark .ant-menu-item-selected {
+  box-shadow: 0 6px 16px -4px rgba(31, 111, 235, 0.55);
+  animation: popMenu 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes popMenu {
+  from {
+    transform: scale(0.94);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* cards com elevação suave ao passar o mouse, sem depender de JS */
+.ant-card-hoverable {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.ant-card-hoverable:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 32px -12px rgba(31, 111, 235, 0.25);
+}
+
+/* ícone do item de menu "pula" um pouco ao passar o mouse */
+.ant-menu-dark .ant-menu-item .anticon,
+.ant-menu-dark .ant-menu-submenu-title .anticon {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.ant-menu-dark .ant-menu-item:hover .anticon,
+.ant-menu-dark .ant-menu-submenu-title:hover .anticon {
+  transform: scale(1.18) rotate(-4deg);
+}
+
+/* leve elevação em todos os botões ao passar o mouse */
+.ant-btn {
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease !important;
+}
+
+.ant-btn:not(.ant-btn-icon-only):hover,
+.ant-btn-icon-only:hover {
+  transform: translateY(-1px);
+}
+
+.ant-btn:active {
+  transform: translateY(0);
+}
+
+/* chip de vidro (banner escuro do Início, estilo "glass") */
+.chip-glass {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* blobs decorativos do fundo da tela de login */
+@keyframes flutuar {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(3%, -4%) scale(1.05);
+  }
+  66% {
+    transform: translate(-2%, 3%) scale(0.97);
+  }
+}
+
+.blob-login {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.55;
+  animation: flutuar 16s ease-in-out infinite;
+  pointer-events: none;
+}
