@@ -12,7 +12,13 @@ public enum Permissao {
     PRODUTO_VISUALIZAR(Modulo.ESTOQUE, "Consultar produtos"),
     PRODUTO_CRIAR(Modulo.ESTOQUE, "Cadastrar produtos"),
     PRODUTO_EDITAR(Modulo.ESTOQUE, "Editar produtos"),
-    PRODUTO_EXCLUIR(Modulo.ESTOQUE, "Excluir produtos");
+    PRODUTO_EXCLUIR(Modulo.ESTOQUE, "Excluir produtos"),
+
+    // ---------- Vendas ----------
+    VENDA_VISUALIZAR(Modulo.VENDAS, "Consultar vendas"),
+    VENDA_CRIAR(Modulo.VENDAS, "Cadastrar vendas"),
+    VENDA_EDITAR(Modulo.VENDAS, "Editar vendas"),
+    VENDA_EXCLUIR(Modulo.VENDAS, "Excluir vendas");
 
     private final Modulo modulo;
     private final String descricao;

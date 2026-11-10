@@ -9,6 +9,10 @@ export type Permissao =
   | 'PRODUTO_CRIAR'
   | 'PRODUTO_EDITAR'
   | 'PRODUTO_EXCLUIR'
+  | 'VENDA_VISUALIZAR'
+  | 'VENDA_CRIAR'
+  | 'VENDA_EDITAR'
+  | 'VENDA_EXCLUIR'
 
 export interface PerfilResumo {
   perfilId: string

@@ -2,7 +2,7 @@ services:
   backend:
     image: ghcr.io/gisele-siqueira/projeto-smge/backend:latest
     container_name: smge-backend
-    restart: unless-stopped
+    restart: no
     environment:
       # Credenciais do administrador inicial (criado na primeira execução se não existir)
       SMGE_ADMIN_LOGIN: ${SMGE_ADMIN_LOGIN:-admin}
@@ -26,7 +26,7 @@ services:
   frontend:
     image: ghcr.io/gisele-siqueira/projeto-smge/frontend:latest
     container_name: smge-frontend
-    restart: unless-stopped
+    restart: no
     depends_on:
       - backend
     ports:
