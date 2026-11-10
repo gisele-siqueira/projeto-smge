@@ -1,6 +1,7 @@
 import {
   DeleteOutlined,
   EditOutlined,
+  HistoryOutlined,
   PlusOutlined,
   SearchOutlined,
   TagsFilled,
@@ -16,6 +17,7 @@ import { Pagina } from '../../layout/Pagina'
 import { corDoIndice } from '../../util/cores'
 import { formatarData, formatarMoeda } from '../../util/formato'
 import { useCarregar } from '../../util/useCarregar'
+import { HistoricoProdutoModal } from './HistoricoProdutoModal'
 import { ProdutoModal } from './ProdutoModal'
 
 export function ProdutosPage() {
@@ -30,6 +32,7 @@ export function ProdutosPage() {
   const [busca, setBusca] = useState('')
   const [modalAberto, setModalAberto] = useState(false)
   const [editando, setEditando] = useState<Produto | null>(null)
+  const [vendoHistorico, setVendoHistorico] = useState<Produto | null>(null)
 
   const termo = busca.trim().toLowerCase()
   const filtrados = produtos.dados.filter(
@@ -141,10 +144,12 @@ export function ProdutosPage() {
             {
               title: 'Ações',
               key: 'acoes',
-              width: 110,
-              hidden: !podeEditar && !podeExcluir,
+              width: 150,
               render: (_, p) => (
                 <Space>
+                  <Tooltip title="Histórico de alterações">
+                    <Button icon={<HistoryOutlined />} onClick={() => setVendoHistorico(p)} />
+                  </Tooltip>
                   {podeEditar && (
                     <Tooltip title="Editar">
                       <Button icon={<EditOutlined />} onClick={() => abrir(p)} />
@@ -180,6 +185,7 @@ export function ProdutosPage() {
           void produtos.recarregar()
         }}
       />
+      <HistoricoProdutoModal produto={vendoHistorico} aoFechar={() => setVendoHistorico(null)} />
     </Pagina>
   )
 }
