@@ -111,3 +111,46 @@ export async function api<T>(caminho: string, opcoes: Opcoes = {}): Promise<T> {
   }
   return (await resposta.json()) as T
 }
+
+// baixa um arquivo autenticado (ex.: relatório em Excel/PDF): a tag <a> sozinha
+// não manda o header Authorization, por isso busca o blob e simula o clique
+export async function baixarArquivo(caminho: string, nomeArquivo: string): Promise<void> {
+  const headers: Record<string, string> = {}
+  const token = tokenStorage.obter()
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
+  }
+
+  let resposta: Response
+  try {
+    resposta = await fetch(`/api${caminho}`, { headers })
+  } catch {
+    throw new ApiError(0, 'Não foi possível conectar ao servidor.')
+  }
+
+  if (!resposta.ok) {
+    const problema = await resposta.json().catch(() => null)
+
+    if (resposta.status === 401 && token) {
+      aoPerderSessao?.()
+    }
+
+    throw new ApiError(
+      resposta.status,
+      problema?.detail ?? mensagemPadrao(resposta.status),
+      problema?.codigo,
+      problema?.erros,
+    )
+  }
+
+  const blob = await resposta.blob()
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = nomeArquivo
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+}

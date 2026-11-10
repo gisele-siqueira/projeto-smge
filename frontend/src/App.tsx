@@ -9,6 +9,8 @@ import { MinhaContaPage } from './paginas/MinhaContaPage'
 import { PerfisPage } from './paginas/perfis/PerfisPage'
 import { ProdutosPage } from './paginas/produtos/ProdutosPage'
 import { UsuariosPage } from './paginas/usuarios/UsuariosPage'
+import { RelatorioVendasPage } from './paginas/vendas/RelatorioVendasPage'
+import { VendasPage } from './paginas/vendas/VendasPage'
 
 // cada rota exige a mesma permissão do menu (layout/menu.tsx) e do endpoint correspondente
 export function App() {
@@ -46,6 +48,22 @@ export function App() {
           element={
             <RotaProtegida permissoes={['PRODUTO_VISUALIZAR']}>
               <ProdutosPage />
+            </RotaProtegida>
+          }
+        />
+        <Route
+          path="vendas"
+          element={
+            <RotaProtegida permissoes={['VENDA_VISUALIZAR']}>
+              <VendasPage />
+            </RotaProtegida>
+          }
+        />
+        <Route
+          path="vendas/relatorio"
+          element={
+            <RotaProtegida permissoes={['VENDA_VISUALIZAR']}>
+              <RelatorioVendasPage />
             </RotaProtegida>
           }
         />

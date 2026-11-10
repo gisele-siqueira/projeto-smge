@@ -1,8 +1,11 @@
 import {
+  BarChartOutlined,
+  DollarCircleFilled,
   HomeFilled,
   SafetyCertificateFilled,
   SettingFilled,
   ShopFilled,
+  ShoppingCartOutlined,
   TagsFilled,
   TeamOutlined,
 } from '@ant-design/icons'
@@ -52,6 +55,25 @@ export const MENU: ItemMenu[] = [
         titulo: 'Produtos',
         icone: <TagsFilled />,
         permissoes: ['PRODUTO_VISUALIZAR'],
+      },
+    ],
+  },
+  {
+    chave: 'vendas',
+    titulo: 'Vendas',
+    icone: <ShoppingCartOutlined />,
+    filhos: [
+      {
+        chave: '/vendas',
+        titulo: 'Vendas',
+        icone: <DollarCircleFilled />,
+        permissoes: ['VENDA_VISUALIZAR'],
+      },
+      {
+        chave: '/vendas/relatorio',
+        titulo: 'Relatório de vendas',
+        icone: <BarChartOutlined />,
+        permissoes: ['VENDA_VISUALIZAR'],
       },
     ],
   },

@@ -1,6 +1,6 @@
 // Uma função por endpoint da API.
 
-import { api } from './cliente'
+import { api, baixarArquivo } from './cliente'
 import type {
   Acessos,
   LoginResponse,
@@ -11,7 +11,10 @@ import type {
   Produto,
   ProdutoAuditoria,
   ProdutoForm,
+  RelatorioVendas,
   Usuario,
+  Venda,
+  VendaForm,
 } from './tipos'
 
 export const authApi = {
@@ -50,4 +53,17 @@ export const produtosApi = {
     api<Produto>(`/products/${id}`, { method: 'PUT', body: dados }),
   excluir: (id: string) => api<void>(`/products/${id}`, { method: 'DELETE' }),
   historico: (id: string) => api<ProdutoAuditoria[]>(`/products/${id}/history`),
+}
+
+export const vendasApi = {
+  listar: () => api<Venda[]>('/sales'),
+  criar: (dados: VendaForm) => api<Venda>('/sales', { method: 'POST', body: dados }),
+  buscarPorId: (id: string) => api<Venda>(`/sales/${id}`),
+  cancelar: (id: string) => api<Venda>(`/sales/${id}/cancelar`, { method: 'PATCH' }),
+  relatorio: (inicio: string, fim: string) =>
+    api<RelatorioVendas>(`/sales/report?inicio=${inicio}&fim=${fim}`),
+  baixarExcel: (inicio: string, fim: string) =>
+    baixarArquivo(`/sales/report/excel?inicio=${inicio}&fim=${fim}`, 'relatorio-vendas.xlsx'),
+  baixarPdf: (inicio: string, fim: string) =>
+    baixarArquivo(`/sales/report/pdf?inicio=${inicio}&fim=${fim}`, 'relatorio-vendas.pdf'),
 }

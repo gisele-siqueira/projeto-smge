@@ -9,6 +9,9 @@ export type Permissao =
   | 'PRODUTO_CRIAR'
   | 'PRODUTO_EDITAR'
   | 'PRODUTO_EXCLUIR'
+  | 'VENDA_VISUALIZAR'
+  | 'VENDA_CRIAR'
+  | 'VENDA_CANCELAR'
 
 export interface PerfilResumo {
   perfilId: string
@@ -106,4 +109,57 @@ export interface ProdutoAuditoria {
   campoAlterado: string
   valorAnterior: string | null
   valorNovo: string | null
+}
+
+// Mantenha em sincronia com VendaModel.java
+export type StatusVenda = 'CONCLUIDA' | 'CANCELADA'
+
+export interface ItemVenda {
+  produtoId: string
+  produtoCodigo: string
+  produtoNome: string
+  quantidade: number
+  precoUnitario: number
+  subtotal: number
+}
+
+export interface Venda {
+  vendaId: string
+  dataVenda: string
+  status: StatusVenda
+  valorTotal: number
+  itens: ItemVenda[]
+}
+
+export interface ItemVendaForm {
+  produtoId: string
+  quantidade: number
+}
+
+export interface VendaForm {
+  itens: ItemVendaForm[]
+}
+
+export interface VendaResumoRelatorio {
+  vendaId: string
+  dataVenda: string
+  quantidadeItens: number
+  valorTotal: number
+}
+
+export interface ProdutoRelatorio {
+  produtoCodigo: string
+  produtoNome: string
+  quantidadeVendida: number
+  receitaGerada: number
+}
+
+export interface RelatorioVendas {
+  inicio: string
+  fim: string
+  totalVendas: number
+  totalItens: number
+  receitaTotal: number
+  vendas: VendaResumoRelatorio[]
+  produtosMaisVendidos: ProdutoRelatorio[]
 }
